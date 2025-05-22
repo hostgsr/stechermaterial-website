@@ -4,20 +4,50 @@ export const homePageQuery = defineQuery(`
   *[_type == "home"][0]{
     _id,
     _type,
+    title,
     overview,
-    showcaseProjects[]{
+    bio,
+    bioImages[]{
+      ...,
+      "imageData": asset->metadata
+    },
+    showcaseWorks[]{
       _key,
       ...@->{
         _id,
         _type,
-        coverImage,
-        overview,
-        "slug": slug.current,
-        tags,
         title,
+        year,
+        classification,
+        "slug": slug.current,
+        images[]{
+          ...,
+          "imageData": asset->metadata
+        }
       }
     },
-    title,
+    publicationText,
+    publications[]{
+      title,
+      image{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      description,
+      file,
+      link
+    },
+    studioText,
+    studios[]{
+      title,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      location,
+      description
+    }
   }
 `)
 
@@ -37,7 +67,10 @@ export const projectBySlugQuery = defineQuery(`
     _id,
     _type,
     client,
-    coverImage,
+    coverImage{
+      ...,
+      "imageData": asset->metadata
+    },
     description,
     duration,
     overview,
@@ -45,6 +78,137 @@ export const projectBySlugQuery = defineQuery(`
     "slug": slug.current,
     tags,
     title,
+  }
+`)
+
+export const workBySlugQuery = defineQuery(`
+  *[_type == "work" && slug.current == $slug][0] {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    images[]{
+      ...,
+      "imageData": asset->metadata
+    },
+    descriptionMedium,
+    description,
+    year,
+    size,
+    location,
+    classification,
+    publications[]{
+      title,
+      year,
+      description,
+      file,
+      link
+    }
+  }
+`)
+
+export const allWorksQuery = defineQuery(`
+  *[_type == "work"] | order(year desc) {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    images[0]{
+      ...,
+      "imageData": asset->metadata
+    },
+    year,
+    classification,
+    size,
+    location
+  }
+`)
+
+export const exhibitionBySlugQuery = defineQuery(`
+  *[_type == "exhibition" && slug.current == $slug][0] {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    date,
+    shortDescription,
+    description,
+    location,
+    assignedWorks[]->{
+      _id,
+      title,
+      "slug": slug.current,
+      images[0]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification
+    },
+    exhibitionPhotos[]{
+      ...,
+      "imageData": asset->metadata
+    }
+  }
+`)
+
+export const allExhibitionsQuery = defineQuery(`
+  *[_type == "exhibition"] | order(date desc) {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    date,
+    shortDescription,
+    location,
+    exhibitionPhotos[0]{
+      ...,
+      "imageData": asset->metadata
+    }
+  }
+`)
+
+export const collectionBySlugQuery = defineQuery(`
+  *[_type == "collection" && slug.current == $slug][0] {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    date,
+    shortDescription,
+    description,
+    location,
+    assignedWorks[]->{
+      _id,
+      title,
+      "slug": slug.current,
+      images[0]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification
+    },
+    collectionPhotos[]{
+      ...,
+      "imageData": asset->metadata
+    }
+  }
+`)
+
+export const allCollectionsQuery = defineQuery(`
+  *[_type == "collection"] | order(date desc) {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    date,
+    shortDescription,
+    location,
+    collectionPhotos[0]{
+      ...,
+      "imageData": asset->metadata
+    }
   }
 `)
 
@@ -61,7 +225,10 @@ export const settingsQuery = defineQuery(`
         title
       }
     },
-    ogImage,
+    ogImage{
+      ...,
+      "imageData": asset->metadata
+    },
   }
 `)
 

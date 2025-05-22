@@ -6,8 +6,11 @@
 import {apiVersion, dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import * as resolve from '@/sanity/plugins/resolve'
 import {pageStructure, singletonPlugin} from '@/sanity/plugins/settings'
+import collection from '@/sanity/schemas/documents/collection'
+import exhibition from '@/sanity/schemas/documents/exhibition'
 import page from '@/sanity/schemas/documents/page'
 import project from '@/sanity/schemas/documents/project'
+import work from '@/sanity/schemas/documents/work'
 import duration from '@/sanity/schemas/objects/duration'
 import milestone from '@/sanity/schemas/objects/milestone'
 import timeline from '@/sanity/schemas/objects/timeline'
@@ -19,8 +22,7 @@ import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
-const title =
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_TITLE || 'Next.js Personal Website with Sanity.io'
+const title = 'CMS'
 
 export default defineConfig({
   basePath: studioUrl,
@@ -37,6 +39,9 @@ export default defineConfig({
       duration,
       page,
       project,
+      work,
+      exhibition,
+      collection,
       // Objects
       milestone,
       timeline,
