@@ -5,49 +5,16 @@ export const homePageQuery = defineQuery(`
     _id,
     _type,
     title,
-    overview,
-    bio,
-    bioImages[]{
+    imageGallery[]{
       ...,
       "imageData": asset->metadata
-    },
-    showcaseWorks[]{
-      _key,
-      ...@->{
-        _id,
-        _type,
-        title,
-        year,
-        classification,
-        "slug": slug.current,
-        images[]{
-          ...,
-          "imageData": asset->metadata
-        }
-      }
-    },
-    publicationText,
-    publications[]{
-      title,
-      image{
-        ...,
-        "imageData": asset->metadata
-      },
-      year,
-      description,
-      file,
-      link
-    },
-    studioText,
-    studios[]{
-      title,
-      images[]{
-        ...,
-        "imageData": asset->metadata
-      },
-      location,
-      description
     }
+  }
+`)
+
+export const marqueeTextQuery = defineQuery(`
+  *[_type == "home"][0]{
+    marqueeText
   }
 `)
 
@@ -66,18 +33,29 @@ export const projectBySlugQuery = defineQuery(`
   *[_type == "project" && slug.current == $slug][0] {
     _id,
     _type,
-    client,
-    coverImage{
+    title,
+    "slug": slug.current,
+    year,
+    description,
+    locationPhotos[]{
       ...,
       "imageData": asset->metadata
-    },
-    description,
-    duration,
-    overview,
-    site,
-    "slug": slug.current,
-    tags,
+    }
+  }
+`)
+
+export const allProjectsQuery = defineQuery(`
+  *[_type == "project"] | order(year desc) {
+    _id,
+    _type,
     title,
+    "slug": slug.current,
+    year,
+    description,
+    locationPhotos[0]{
+      ...,
+      "imageData": asset->metadata
+    }
   }
 `)
 
@@ -113,7 +91,7 @@ export const allWorksQuery = defineQuery(`
     _type,
     title,
     "slug": slug.current,
-    images[0]{
+    images[]{
       ...,
       "imageData": asset->metadata
     },
@@ -131,7 +109,11 @@ export const exhibitionBySlugQuery = defineQuery(`
     title,
     "slug": slug.current,
     date,
+    endDate,
+    isSolo,
+    isCurrent,  
     shortDescription,
+    photoCredits,
     description,
     location,
     assignedWorks[]->{
@@ -159,6 +141,8 @@ export const allExhibitionsQuery = defineQuery(`
     title,
     "slug": slug.current,
     date,
+    isCurrent,
+    isSolo,
     shortDescription,
     location,
     exhibitionPhotos[0]{
@@ -175,6 +159,7 @@ export const collectionBySlugQuery = defineQuery(`
     title,
     "slug": slug.current,
     date,
+    isPrivate,
     shortDescription,
     description,
     location,
@@ -197,12 +182,13 @@ export const collectionBySlugQuery = defineQuery(`
 `)
 
 export const allCollectionsQuery = defineQuery(`
-  *[_type == "collection"] | order(date desc) {
+  *[_type == "collection" && !isPrivate] | order(date desc) {
     _id,
     _type,
     title,
     "slug": slug.current,
     date,
+    isPrivate,
     shortDescription,
     location,
     collectionPhotos[0]{
@@ -234,4 +220,195 @@ export const settingsQuery = defineQuery(`
 
 export const slugsByTypeQuery = defineQuery(`
   *[_type == $type && defined(slug.current)]{"slug": slug.current}
+`)
+
+export const allPublicationsQuery = defineQuery(`
+  *[_type == "publication"] | order(year desc) {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    publicationTypes,
+    image{
+      ...,
+      "imageData": asset->metadata
+    },
+    year,
+    description,
+    file,
+    link
+  }
+`)
+
+export const worksByYearQuery = defineQuery(`
+  *[_type == "home"][0]{
+    works2018[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    works2019[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    works2020[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    works2021[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    works2022[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    works2023[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    works2024[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    works2025[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    objectImagesWorks[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    paintingsWorks[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    drawingsWorks[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    },
+    sculpturesWorks[]->{
+      _id,
+      _type,
+      title,
+      "slug": slug.current,
+      images[]{
+        ...,
+        "imageData": asset->metadata
+      },
+      year,
+      classification,
+      size,
+      location
+    }
+  }
 `)

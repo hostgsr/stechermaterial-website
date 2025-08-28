@@ -42,28 +42,6 @@ export type SanityImageDimensions = {
   aspectRatio?: number
 }
 
-export type SanityFileAsset = {
-  _id: string
-  _type: 'sanity.fileAsset'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  originalFilename?: string
-  label?: string
-  title?: string
-  description?: string
-  altText?: string
-  sha1hash?: string
-  extension?: string
-  mimeType?: string
-  size?: number
-  assetId?: string
-  uploadId?: string
-  path?: string
-  url?: string
-  source?: SanityAssetSourceData
-}
-
 export type Geopoint = {
   _type: 'geopoint'
   lat?: number
@@ -103,6 +81,145 @@ export type Milestone = {
   }
   tags?: Array<string>
   duration?: Duration
+}
+
+export type Collection = {
+  _id: string
+  _type: 'collection'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  date?: string
+  isPrivate?: boolean
+  shortDescription?: string
+  description?: string
+  location?: string
+  assignedWorks?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  collectionPhotos?: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+}
+
+export type Exhibition = {
+  _id: string
+  _type: 'exhibition'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  date?: string
+  endDate?: string
+  isCurrent?: boolean
+  isSolo?: boolean
+  shortDescription?: string
+  description?: string
+  photoCredits?: string
+  location?: string
+  assignedWorks?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  exhibitionPhotos?: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+}
+
+export type Work = {
+  _id: string
+  _type: 'work'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  images?: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+  descriptionMedium?: string
+  description?: string
+  year?: string
+  date?: string
+  size?: string
+  location?: string
+  classification?: 'paintings' | 'object-images' | 'drawings' | 'sculptures'
+}
+
+export type Publication = {
+  _id: string
+  _type: 'publication'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  publicationTypes?: Array<'press' | 'books' | 'interviews' | 'video' | 'talks'>
+  title?: string
+  slug?: Slug
+  image?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  year?: string
+  description?: string
+  file?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  }
+  link?: string
 }
 
 export type Project = {
@@ -191,20 +308,6 @@ export type Page = {
   _rev: string
   title?: string
   slug?: Slug
-  overview?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
-    markDefs?: null
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
   body?: Array<
     | {
         children?: Array<{
@@ -315,6 +418,324 @@ export type Settings = {
   }
 }
 
+export type Home = {
+  _id: string
+  _type: 'home'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  marqueeText?: string
+  overview?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  bio?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  bioModules?: Array<{
+    layout?: 'text-left' | 'image-left' | 'text-only' | 'image-only'
+    text?: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'normal'
+      listItem?: never
+      markDefs?: Array<{
+        href?: string
+        _type: 'link'
+        _key: string
+      }>
+      level?: number
+      _type: 'block'
+      _key: string
+    }>
+    image?: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+    }
+    imageCaption?: string
+    _type: 'textImageModule'
+    _key: string
+  }>
+  bioImages?: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+  musicFiles?: Array<{
+    musicFile?: string
+    musicTitle?: string
+    _key: string
+  }>
+  showcaseWorks?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  currentShows?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'exhibition'
+  }>
+  specialProjects?: Array<{
+    title?: string
+    year?: string
+    link?: string
+    color?: string
+    _key: string
+  }>
+  sidebarMenuItems?: Array<{
+    name?: string
+    href?: string
+    color?: string
+    _key: string
+  }>
+  publicationText?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  publications?: Array<{
+    publicationTypes?: Array<'press' | 'books' | 'interviews' | 'video' | 'talks'>
+    title?: string
+    image?: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+    }
+    year?: string
+    description?: string
+    file?: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+      }
+      media?: unknown
+      _type: 'file'
+    }
+    link?: string
+    _key: string
+  }>
+  works2025?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  works2024?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  works2023?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  works2022?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  works2021?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  works2020?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  works2019?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  works2018?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  objectImagesWorks?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  sculpturesWorks?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  paintingsWorks?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  drawingsWorks?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'work'
+  }>
+  studioText?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  studios?: Array<{
+    title?: string
+    images?: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+    }>
+    location?: string
+    description?: string
+    _key: string
+  }>
+}
+
+export type SanityFileAsset = {
+  _id: string
+  _type: 'sanity.fileAsset'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  originalFilename?: string
+  label?: string
+  title?: string
+  description?: string
+  altText?: string
+  sha1hash?: string
+  extension?: string
+  mimeType?: string
+  size?: number
+  assetId?: string
+  uploadId?: string
+  path?: string
+  url?: string
+  source?: SanityAssetSourceData
+}
+
 export type SanityImageCrop = {
   _type: 'sanity.imageCrop'
   top?: number
@@ -372,66 +793,38 @@ export type SanityImageMetadata = {
   isOpaque?: boolean
 }
 
-export type Home = {
-  _id: string
-  _type: 'home'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  overview?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
-    markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-  showcaseProjects?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'project'
-  }>
-}
-
 export type AllSanitySchemaTypes =
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
-  | SanityFileAsset
   | Geopoint
   | Timeline
   | Milestone
+  | Collection
+  | Exhibition
+  | Work
+  | Publication
   | Project
   | Page
   | Slug
   | Duration
   | Settings
+  | Home
+  | SanityFileAsset
   | SanityImageCrop
   | SanityImageHotspot
   | SanityImageAsset
   | SanityAssetSourceData
   | SanityImageMetadata
-  | Home
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./sanity/lib/queries.ts
 // Variable: homePageQuery
-// Query: *[_type == "home"][0]{    _id,    _type,    overview,    showcaseProjects[]{      _key,      ...@->{        _id,        _type,        coverImage,        overview,        "slug": slug.current,        tags,        title,      }    },    title,  }
+// Query: *[_type == "home"][0]{    _id,    _type,    title,    marqueeText,    overview,    bio,    bioModules[]{      _key,      layout,      text,      image{        ...,        "imageData": asset->metadata      },      imageCaption    },    bioImages[]{      ...,      "imageData": asset->metadata    },    showcaseWorks[]{      _key,      ...@->{        _id,        _type,        title,        year,        classification,        "slug": slug.current,        images[]{          ...,          "imageData": asset->metadata        }      }    },    musicFiles[],    currentShows[]->{title,      "slug": slug.current,      image{        ...,        "imageData": asset->metadata      },      location,      date,      isCurrent,      },    publicationText,    publications[]{      title,      publicationTypes,      image{        ...,        "imageData": asset->metadata      },      year,      description,      file,      link    },    studioText,    studios[]{      title,      images[]{        ...,        "imageData": asset->metadata      },      location,      description    },    specialProjects[]{      title,      year,      link,      color    },    sidebarMenuItems[]{      name,      href,      color    }  }
 export type HomePageQueryResult = {
   _id: string
   _type: 'home'
+  title: string | null
+  marqueeText: string | null
   overview: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -450,11 +843,46 @@ export type HomePageQueryResult = {
     _type: 'block'
     _key: string
   }> | null
-  showcaseProjects: Array<{
+  bio: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
     _key: string
-    _id: string
-    _type: 'project'
-    coverImage: {
+  }> | null
+  bioModules: Array<{
+    _key: string
+    layout: 'image-left' | 'image-only' | 'text-left' | 'text-only' | null
+    text: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'normal'
+      listItem?: never
+      markDefs?: Array<{
+        href?: string
+        _type: 'link'
+        _key: string
+      }>
+      level?: number
+      _type: 'block'
+      _key: string
+    }> | null
+    image: {
       asset?: {
         _ref: string
         _type: 'reference'
@@ -465,26 +893,161 @@ export type HomePageQueryResult = {
       hotspot?: SanityImageHotspot
       crop?: SanityImageCrop
       _type: 'image'
+      imageData: SanityImageMetadata | null
     } | null
-    overview: Array<{
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal'
-      listItem?: never
-      markDefs?: null
-      level?: number
-      _type: 'block'
-      _key: string
-    }> | null
-    slug: string | null
-    tags: Array<string> | null
-    title: string | null
+    imageCaption: string | null
   }> | null
-  title: string | null
+  bioImages: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  }> | null
+  showcaseWorks: Array<{
+    _key: string
+    _id: string
+    _type: 'work'
+    title: string | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+  }> | null
+  musicFiles: Array<{
+    musicFile?: string
+    musicTitle?: string
+    _key: string
+  }> | null
+  currentShows: Array<{
+    title: string | null
+    slug: string | null
+    image: null
+    location: string | null
+    date: string | null
+    isCurrent: boolean | null
+  }> | null
+  publicationText: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  publications: Array<{
+    title: string | null
+    publicationTypes: Array<'books' | 'interviews' | 'press' | 'talks' | 'video'> | null
+    image: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      imageData: SanityImageMetadata | null
+    } | null
+    year: string | null
+    description: string | null
+    file: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+      }
+      media?: unknown
+      _type: 'file'
+    } | null
+    link: string | null
+  }> | null
+  studioText: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  studios: Array<{
+    title: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    location: string | null
+    description: string | null
+  }> | null
+  specialProjects: Array<{
+    title: string | null
+    year: string | null
+    link: string | null
+    color: string | null
+  }> | null
+  sidebarMenuItems: Array<{
+    name: string | null
+    href: string | null
+    color: string | null
+  }> | null
+} | null
+// Variable: marqueeTextQuery
+// Query: *[_type == "home"][0]{    marqueeText  }
+export type MarqueeTextQueryResult = {
+  marqueeText: string | null
 } | null
 // Variable: pagesBySlugQuery
 // Query: *[_type == "page" && slug.current == $slug][0] {    _id,    _type,    body,    overview,    title,    "slug": slug.current,  }
@@ -529,25 +1092,12 @@ export type PagesBySlugQueryResult = {
         _key: string
       }
   > | null
-  overview: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
-    markDefs?: null
-    level?: number
-    _type: 'block'
-    _key: string
-  }> | null
+  overview: null
   title: string | null
   slug: string | null
 } | null
 // Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    client,    coverImage,    description,    duration,    overview,    site,    "slug": slug.current,    tags,    title,  }
+// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    client,    coverImage{      ...,      "imageData": asset->metadata    },    description,    duration,    overview,    site,    "slug": slug.current,    tags,    title,  }
 export type ProjectBySlugQueryResult = {
   _id: string
   _type: 'project'
@@ -563,6 +1113,7 @@ export type ProjectBySlugQueryResult = {
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     _type: 'image'
+    imageData: SanityImageMetadata | null
   } | null
   description: Array<
     | ({
@@ -622,8 +1173,215 @@ export type ProjectBySlugQueryResult = {
   tags: Array<string> | null
   title: string | null
 } | null
+// Variable: workBySlugQuery
+// Query: *[_type == "work" && slug.current == $slug][0] {    _id,    _type,    title,    "slug": slug.current,    images[]{      ...,      "imageData": asset->metadata    },    descriptionMedium,    description,    year,    size,    location,    classification,    publications[]{      title,      year,      description,      file,      link    }  }
+export type WorkBySlugQueryResult = {
+  _id: string
+  _type: 'work'
+  title: string | null
+  slug: string | null
+  images: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  }> | null
+  descriptionMedium: string | null
+  description: string | null
+  year: string | null
+  size: string | null
+  location: string | null
+  classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+  publications: null
+} | null
+// Variable: allWorksQuery
+// Query: *[_type == "work"] | order(year desc) {    _id,    _type,    title,    "slug": slug.current,    images[]{      ...,      "imageData": asset->metadata    },    year,    classification,    size,    location  }
+export type AllWorksQueryResult = Array<{
+  _id: string
+  _type: 'work'
+  title: string | null
+  slug: string | null
+  images: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  }> | null
+  year: string | null
+  classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+  size: string | null
+  location: string | null
+}>
+// Variable: exhibitionBySlugQuery
+// Query: *[_type == "exhibition" && slug.current == $slug][0] {    _id,    _type,    title,    "slug": slug.current,    date,    endDate,    isSolo,    isCurrent,      shortDescription,    photoCredits,    description,    location,    assignedWorks[]->{      _id,      title,      "slug": slug.current,      images[0]{        ...,        "imageData": asset->metadata      },      year,      classification    },    exhibitionPhotos[]{      ...,      "imageData": asset->metadata    }  }
+export type ExhibitionBySlugQueryResult = {
+  _id: string
+  _type: 'exhibition'
+  title: string | null
+  slug: string | null
+  date: string | null
+  endDate: string | null
+  isSolo: boolean | null
+  isCurrent: boolean | null
+  shortDescription: string | null
+  photoCredits: string | null
+  description: string | null
+  location: string | null
+  assignedWorks: Array<{
+    _id: string
+    title: string | null
+    slug: string | null
+    images: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    } | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+  }> | null
+  exhibitionPhotos: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  }> | null
+} | null
+// Variable: allExhibitionsQuery
+// Query: *[_type == "exhibition"] | order(date desc) {    _id,    _type,    title,    "slug": slug.current,    date,    isCurrent,    isSolo,    shortDescription,    location,    exhibitionPhotos[0]{      ...,      "imageData": asset->metadata    }  }
+export type AllExhibitionsQueryResult = Array<{
+  _id: string
+  _type: 'exhibition'
+  title: string | null
+  slug: string | null
+  date: string | null
+  isCurrent: boolean | null
+  isSolo: boolean | null
+  shortDescription: string | null
+  location: string | null
+  exhibitionPhotos: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  } | null
+}>
+// Variable: collectionBySlugQuery
+// Query: *[_type == "collection" && slug.current == $slug][0] {    _id,    _type,    title,    "slug": slug.current,    date,    isPrivate,    shortDescription,    description,    location,    assignedWorks[]->{      _id,      title,      "slug": slug.current,      images[0]{        ...,        "imageData": asset->metadata      },      year,      classification    },    collectionPhotos[]{      ...,      "imageData": asset->metadata    }  }
+export type CollectionBySlugQueryResult = {
+  _id: string
+  _type: 'collection'
+  title: string | null
+  slug: string | null
+  date: string | null
+  isPrivate: boolean | null
+  shortDescription: string | null
+  description: string | null
+  location: string | null
+  assignedWorks: Array<{
+    _id: string
+    title: string | null
+    slug: string | null
+    images: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    } | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+  }> | null
+  collectionPhotos: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  }> | null
+} | null
+// Variable: allCollectionsQuery
+// Query: *[_type == "collection" && !isPrivate] | order(date desc) {    _id,    _type,    title,    "slug": slug.current,    date,    isPrivate,    shortDescription,    location,    collectionPhotos[0]{      ...,      "imageData": asset->metadata    }  }
+export type AllCollectionsQueryResult = Array<{
+  _id: string
+  _type: 'collection'
+  title: string | null
+  slug: string | null
+  date: string | null
+  isPrivate: boolean | null
+  shortDescription: string | null
+  location: string | null
+  collectionPhotos: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  } | null
+}>
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]{    _id,    _type,    footer,    menuItems[]{      _key,      ...@->{        _type,        "slug": slug.current,        title      }    },    ogImage,  }
+// Query: *[_type == "settings"][0]{    _id,    _type,    footer,    menuItems[]{      _key,      ...@->{        _type,        "slug": slug.current,        title      }    },    ogImage{      ...,      "imageData": asset->metadata    },  }
 export type SettingsQueryResult = {
   _id: string
   _type: 'settings'
@@ -676,6 +1434,7 @@ export type SettingsQueryResult = {
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     _type: 'image'
+    imageData: SanityImageMetadata | null
   } | null
 } | null
 // Variable: slugsByTypeQuery
@@ -683,13 +1442,349 @@ export type SettingsQueryResult = {
 export type SlugsByTypeQueryResult = Array<{
   slug: string | null
 }>
+// Variable: allPublicationsQuery
+// Query: *[_type == "publication"] | order(year desc) {    _id,    _type,    title,    "slug": slug.current,    publicationTypes,    image{      ...,      "imageData": asset->metadata    },    year,    description,    file,    link  }
+export type AllPublicationsQueryResult = Array<{
+  _id: string
+  _type: 'publication'
+  title: string | null
+  slug: string | null
+  publicationTypes: Array<'books' | 'interviews' | 'press' | 'talks' | 'video'> | null
+  image: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    imageData: SanityImageMetadata | null
+  } | null
+  year: string | null
+  description: string | null
+  file: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  } | null
+  link: string | null
+}>
+// Variable: worksByYearQuery
+// Query: *[_type == "home"][0]{    works2018[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    works2019[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    works2020[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    works2021[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    works2022[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    works2023[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    works2024[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    works2025[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    objectImagesWorks[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    paintingsWorks[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    drawingsWorks[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    },    sculpturesWorks[]->{      _id,      _type,      title,      "slug": slug.current,      images[]{        ...,        "imageData": asset->metadata      },      year,      classification,      size,      location    }  }
+export type WorksByYearQueryResult = {
+  works2018: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  works2019: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  works2020: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  works2021: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  works2022: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  works2023: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  works2024: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  works2025: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  objectImagesWorks: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  paintingsWorks: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  drawingsWorks: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+  sculpturesWorks: Array<{
+    _id: string
+    _type: 'work'
+    title: string | null
+    slug: string | null
+    images: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+      imageData: SanityImageMetadata | null
+    }> | null
+    year: string | null
+    classification: 'drawings' | 'object-images' | 'paintings' | 'sculptures' | null
+    size: string | null
+    location: string | null
+  }> | null
+} | null
 
 declare module '@sanity/client' {
   interface SanityQueries {
-    '\n  *[_type == "home"][0]{\n    _id,\n    _type,\n    overview,\n    showcaseProjects[]{\n      _key,\n      ...@->{\n        _id,\n        _type,\n        coverImage,\n        overview,\n        "slug": slug.current,\n        tags,\n        title,\n      }\n    },\n    title,\n  }\n': HomePageQueryResult
+    '\n  *[_type == "home"][0]{\n    _id,\n    _type,\n    title,\n    marqueeText,\n    overview,\n    bio,\n    bioModules[]{\n      _key,\n      layout,\n      text,\n      image{\n        ...,\n        "imageData": asset->metadata\n      },\n      imageCaption\n    },\n    bioImages[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    showcaseWorks[]{\n      _key,\n      ...@->{\n        _id,\n        _type,\n        title,\n        year,\n        classification,\n        "slug": slug.current,\n        images[]{\n          ...,\n          "imageData": asset->metadata\n        }\n      }\n    },\n    musicFiles[],\n    currentShows[]->{title,\n      "slug": slug.current,\n      image{\n        ...,\n        "imageData": asset->metadata\n      },\n      location,\n      date,\n      isCurrent,\n      },\n    publicationText,\n    publications[]{\n      title,\n      publicationTypes,\n      image{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      description,\n      file,\n      link\n    },\n    studioText,\n    studios[]{\n      title,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      location,\n      description\n    },\n    specialProjects[]{\n      title,\n      year,\n      link,\n      color\n    },\n    sidebarMenuItems[]{\n      name,\n      href,\n      color\n    }\n  }\n': HomePageQueryResult
+    '\n  *[_type == "home"][0]{\n    marqueeText\n  }\n': MarqueeTextQueryResult
     '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    _type,\n    body,\n    overview,\n    title,\n    "slug": slug.current,\n  }\n': PagesBySlugQueryResult
-    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    client,\n    coverImage,\n    description,\n    duration,\n    overview,\n    site,\n    "slug": slug.current,\n    tags,\n    title,\n  }\n': ProjectBySlugQueryResult
-    '\n  *[_type == "settings"][0]{\n    _id,\n    _type,\n    footer,\n    menuItems[]{\n      _key,\n      ...@->{\n        _type,\n        "slug": slug.current,\n        title\n      }\n    },\n    ogImage,\n  }\n': SettingsQueryResult
+    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    client,\n    coverImage{\n      ...,\n      "imageData": asset->metadata\n    },\n    description,\n    duration,\n    overview,\n    site,\n    "slug": slug.current,\n    tags,\n    title,\n  }\n': ProjectBySlugQueryResult
+    '\n  *[_type == "work" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    descriptionMedium,\n    description,\n    year,\n    size,\n    location,\n    classification,\n    publications[]{\n      title,\n      year,\n      description,\n      file,\n      link\n    }\n  }\n': WorkBySlugQueryResult
+    '\n  *[_type == "work"] | order(year desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    year,\n    classification,\n    size,\n    location\n  }\n': AllWorksQueryResult
+    '\n  *[_type == "exhibition" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    endDate,\n    isSolo,\n    isCurrent,  \n    shortDescription,\n    photoCredits,\n    description,\n    location,\n    assignedWorks[]->{\n      _id,\n      title,\n      "slug": slug.current,\n      images[0]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification\n    },\n    exhibitionPhotos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ExhibitionBySlugQueryResult
+    '\n  *[_type == "exhibition"] | order(date desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    isCurrent,\n    isSolo,\n    shortDescription,\n    location,\n    exhibitionPhotos[0]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllExhibitionsQueryResult
+    '\n  *[_type == "collection" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    isPrivate,\n    shortDescription,\n    description,\n    location,\n    assignedWorks[]->{\n      _id,\n      title,\n      "slug": slug.current,\n      images[0]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification\n    },\n    collectionPhotos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': CollectionBySlugQueryResult
+    '\n  *[_type == "collection" && !isPrivate] | order(date desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    isPrivate,\n    shortDescription,\n    location,\n    collectionPhotos[0]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllCollectionsQueryResult
+    '\n  *[_type == "settings"][0]{\n    _id,\n    _type,\n    footer,\n    menuItems[]{\n      _key,\n      ...@->{\n        _type,\n        "slug": slug.current,\n        title\n      }\n    },\n    ogImage{\n      ...,\n      "imageData": asset->metadata\n    },\n  }\n': SettingsQueryResult
     '\n  *[_type == $type && defined(slug.current)]{"slug": slug.current}\n': SlugsByTypeQueryResult
+    '\n  *[_type == "publication"] | order(year desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    publicationTypes,\n    image{\n      ...,\n      "imageData": asset->metadata\n    },\n    year,\n    description,\n    file,\n    link\n  }\n': AllPublicationsQueryResult
+    '\n  *[_type == "home"][0]{\n    works2018[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    works2019[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    works2020[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    works2021[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    works2022[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    works2023[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    works2024[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    works2025[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    objectImagesWorks[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    paintingsWorks[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    drawingsWorks[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    },\n    sculpturesWorks[]->{\n      _id,\n      _type,\n      title,\n      "slug": slug.current,\n      images[]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification,\n      size,\n      location\n    }\n  }\n': WorksByYearQueryResult
   }
 }

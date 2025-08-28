@@ -10,7 +10,9 @@
     "lint:fix": "npm run format && npm run lint -- --fix",
     "start": "next start",
     "type-check": "tsc --noEmit",
-    "typegen": "sanity schema extract && sanity typegen generate"
+    "typegen": "sanity schema extract && sanity typegen generate",
+    "migrate-publications": "node migrate-publications.js",
+    "export-publications": "node export-publications.js"
   },
   "dependencies": {
     "@next/env": "15.3.2",
@@ -24,10 +26,12 @@
     "@tailwindcss/typography": "0.5.16",
     "classnames": "2.5.1",
     "date-fns": "4.1.0",
+    "framer-motion": "^12.15.0",
     "next": "15.3.2",
     "next-sanity": "9.11.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-intersection-observer": "^9.16.0",
     "react-live-transitions": "0.2.0",
     "rxjs": "7.8.2",
     "sanity": "3.88.1",

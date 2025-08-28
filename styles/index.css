@@ -1,18 +1,57 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+}
+
+body{
+  font-size: 12px;
+  background-color: black;
+  min-height: 100vh;
   overflow-x: hidden;
 }
 
 p:not(:last-child) {
-  margin-bottom: 0.875rem;
 }
 
-ol,
-ul {
-  margin-left: 1rem;
+.musicTitle{
+  margin-bottom: 0rem!important;
 }
+
 
 ol {
   list-style-type: disc;
+}
+
+
+  /* Dark mode styles */
+.dark .custom-range::-webkit-slider-thumb {
+  background: #fff;
+}
+
+.dark .custom-range::-moz-range-thumb {
+  background: #fff;
+}
+
+.custom-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  outline: none;
+  border-radius: 0px;
+}
+
+.custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  background: white;
+  cursor: pointer;
+}
+
+.custom-range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  background: white;
+  cursor: pointer;
 }

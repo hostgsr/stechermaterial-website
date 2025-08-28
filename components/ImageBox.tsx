@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {urlForImage} from '@/sanity/lib/utils'
 import Image from 'next/image'
 

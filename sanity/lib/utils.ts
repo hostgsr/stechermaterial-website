@@ -13,7 +13,26 @@ export const urlForImage = (source: Image | null | undefined) => {
     return undefined
   }
 
-  return imageBuilder?.image(source).auto('format').fit('max')
+  return imageBuilder?.image(source).auto('format').fit('max').quality(85)
+}
+
+export const urlForFullQualityImage = (source: Image | null | undefined) => {
+  // Ensure that source image contains a valid reference
+  if (!source?.asset?._ref) {
+    return undefined
+  }
+
+  return imageBuilder?.image(source).auto('format').fit('max').quality(100)
+}
+
+export const urlForUltraQualityImage = (source: Image | null | undefined) => {
+  // Ensure that source image contains a valid reference
+  if (!source?.asset?._ref) {
+    return undefined
+  }
+
+  // No format conversion, no quality compression - original file
+  return imageBuilder?.image(source).fit('max')
 }
 
 export function urlForOpenGraphImage(image: Image | null | undefined) {
@@ -28,6 +47,8 @@ export function resolveHref(documentType?: string, slug?: string | null): string
       return slug ? `/${slug}` : undefined
     case 'project':
       return slug ? `/projects/${slug}` : undefined
+    case 'work':
+      return slug ? `/works/${slug}` : undefined
     default:
       console.warn('Invalid document type:', documentType)
       return undefined

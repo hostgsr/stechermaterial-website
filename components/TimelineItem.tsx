@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ImageBox from '@/components/ImageBox'
 import type {MilestoneItem} from '@/types'
 

@@ -30,6 +30,25 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'endDate',
+      title: 'End Date',
+      type: 'date',
+    }),
+    defineField({
+      name: 'isCurrent',
+      title: 'Current Exhibition',
+      type: 'boolean',
+      description: 'Mark this exhibition as currently running/active',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'isSolo',
+      title: 'Solo Exhibition',
+      type: 'boolean',
+      description: 'Mark this exhibition as a solo exhibition',
+      initialValue: false,
+    }),
+    defineField({
       name: 'shortDescription',
       title: 'Short Description',
       type: 'string',
@@ -42,9 +61,15 @@ export default defineType({
       rows: 6,
     }),
     defineField({
+      name: 'photoCredits',
+      title: 'Photo Credits',
+      type: 'text',
+      rows: 2,
+    }),
+    defineField({
       name: 'location',
       title: 'Location',
-      type: 'string',
+      type: 'text',
     }),
     defineField({
       name: 'assignedWorks',

@@ -1,6 +1,5 @@
-import {defineField, defineType} from 'sanity'
 import {DocumentIcon, ImageIcon} from '@sanity/icons'
-
+import {defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'collection',
@@ -31,6 +30,13 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'isPrivate',
+      title: 'Private Collection',
+      type: 'boolean',
+      description: 'Mark this collection as private (will not be shown on frontend)',
+      initialValue: false,
+    }),
+    defineField({
       name: 'shortDescription',
       title: 'Short Description',
       type: 'string',
@@ -45,7 +51,7 @@ export default defineType({
     defineField({
       name: 'location',
       title: 'Location',
-      type: 'string',
+      type: 'text',
     }),
     defineField({
       name: 'assignedWorks',

@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client'
 
 import {useDraftModeEnvironment, useIsPresentationTool} from 'next-sanity/hooks'

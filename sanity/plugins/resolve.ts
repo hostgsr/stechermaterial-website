@@ -12,6 +12,10 @@ export const mainDocuments = defineDocuments([
     filter: `_type == "project" && slug.current == $slug`,
   },
   {
+    route: '/works/:slug',
+    filter: `_type == "work" && slug.current == $slug`,
+  },
+  {
     route: '/:slug',
     filter: `_type == "page" && slug.current == $slug`,
   },
@@ -45,6 +49,17 @@ export const locations = {
         {
           title: doc?.title || 'Untitled',
           href: resolveHref('page', doc?.slug)!,
+        },
+      ],
+    }),
+  }),
+  work: defineLocations({
+    select: {title: 'title', slug: 'slug.current'},
+    resolve: (doc) => ({
+      locations: [
+        {
+          title: doc?.title || 'Untitled',
+          href: resolveHref('work', doc?.slug)!,
         },
       ],
     }),

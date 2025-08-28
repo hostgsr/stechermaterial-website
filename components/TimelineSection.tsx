@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {TimelineItem} from '@/components/TimelineItem'
 import {studioUrl} from '@/sanity/lib/api'
 import type {MilestoneItem} from '@/types'

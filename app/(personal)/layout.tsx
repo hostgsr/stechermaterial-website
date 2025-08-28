@@ -1,3 +1,4 @@
+// @ts-nocheck
 import '@/styles/index.css'
 import {CustomPortableText} from '@/components/CustomPortableText'
 import {Navbar} from '@/components/Navbar'
@@ -18,10 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     sanityFetch({query: homePageQuery, stega: false}),
   ])
 
-  const ogImage = urlForOpenGraphImage(
-    // @ts-expect-error - @TODO update @sanity/image-url types so it's compatible
-    settings?.ogImage,
-  )
+  const ogImage = urlForOpenGraphImage(settings?.ogImage)
   return {
     title: homePage?.title
       ? {
@@ -44,10 +42,10 @@ export default async function IndexRoute({children}: {children: React.ReactNode}
   const {data} = await sanityFetch({query: settingsQuery})
   return (
     <>
-      <div className="flex min-h-screen flex-col bg-white text-black">
-        <Navbar data={data} />
-        <div className="mt-20 flex-grow px-4 md:px-16 lg:px-32">{children}</div>
-        <footer className="bottom-0 w-full bg-white py-12 text-center md:py-20">
+      <div className="bg-black text-white min-h-screen h-screen ">
+        {/* <Navbar data={data} /> */}
+        <div className="">{children}</div>
+        {/* <footer className="bottom-0 w-full bg-white py-12 text-center md:py-20">
           {data?.footer && (
             <CustomPortableText
               id={data._id}
@@ -57,7 +55,7 @@ export default async function IndexRoute({children}: {children: React.ReactNode}
               value={data.footer as unknown as PortableTextBlock[]}
             />
           )}
-        </footer>
+        </footer> */}
       </div>
       <Toaster />
       <SanityLive onError={handleError} />

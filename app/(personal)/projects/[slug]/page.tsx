@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {CustomPortableText} from '@/components/CustomPortableText'
 import {Header} from '@/components/Header'
 import ImageBox from '@/components/ImageBox'

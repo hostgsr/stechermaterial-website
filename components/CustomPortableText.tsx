@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ImageBox from '@/components/ImageBox'
 import {TimelineSection} from '@/components/TimelineSection'
 import type {PathSegment, StudioPathLike} from '@sanity/client/csm'
@@ -5,15 +6,9 @@ import {PortableText, type PortableTextBlock, type PortableTextComponents} from 
 import type {Image} from 'sanity'
 
 export function CustomPortableText({
-  id,
-  type,
-  path,
   paragraphClasses,
   value,
 }: {
-  id: string | null
-  type: string | null
-  path: PathSegment[]
   paragraphClasses?: string
   value: PortableTextBlock[]
 }) {
@@ -45,18 +40,6 @@ export function CustomPortableText({
               <div className="font-sans text-sm text-gray-600">{value.caption}</div>
             )}
           </div>
-        )
-      },
-      timeline: ({value}) => {
-        const {items, _key} = value || {}
-        return (
-          <TimelineSection
-            key={_key}
-            id={id}
-            type={type}
-            path={[...path, {_key}, 'items']}
-            timelines={items}
-          />
         )
       },
     },

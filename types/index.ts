@@ -22,3 +22,58 @@ export interface ShowcaseProject {
   tags?: string[]
   title?: string
 }
+
+export interface Exhibition {
+  _id: string
+  _type: string
+  title: string | null
+  slug: string | null
+  date: string | null
+  isCurrent?: boolean
+  isSolo?: boolean
+  shortDescription: string | null
+  location: string | null
+  exhibitionPhotos: any[] | any | null
+}
+
+export interface Collection {
+  _id: string
+  _type: string
+  title: string | null
+  slug: string | null
+  date: string | null
+  isPrivate?: boolean
+  shortDescription: string | null
+  location: string | null
+  collectionPhotos: any[] | any | null
+}
+
+export interface Publication {
+  _key?: string
+  title?: string
+  publicationTypes?: string[]
+  image?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+    }
+    media?: unknown
+    hotspot?: any
+    crop?: any
+    _type: 'image'
+    imageData?: any
+  }
+  year?: string
+  description?: string
+  file?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+    }
+    media?: unknown
+    _type: 'file'
+  }
+  link?: string
+}

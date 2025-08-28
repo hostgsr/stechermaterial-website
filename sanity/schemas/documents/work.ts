@@ -31,6 +31,10 @@ export default defineType({
       of: [
         {
           type: 'image',
+          options: {
+            hotspot: true,
+            crop: true,
+          },
         },
       ],
     }),
@@ -53,6 +57,15 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'date',
+      title: 'Date',
+      type: 'date',
+      description: 'Select a specific date for the work',
+      options: {
+        dateFormat: 'YYYY-MM-DD',
+      },
+    }),
+    defineField({
       name: 'size',
       title: 'Size',
       type: 'string',
@@ -61,7 +74,7 @@ export default defineType({
     defineField({
       name: 'location',
       title: 'Location',
-      type: 'string',
+      type: 'text',
     }),
     defineField({
       name: 'classification',
@@ -84,7 +97,7 @@ export default defineType({
       title: 'title',
       year: 'year',
       classification: 'classification',
-      media: 'images.0',
+      media: 'images.0.asset',
     },
     prepare(selection) {
       const {title, year, classification, media} = selection
