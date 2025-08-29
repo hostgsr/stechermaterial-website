@@ -8,6 +8,10 @@ export const homePageQuery = defineQuery(`
     imageGallery[]{
       ...,
       "imageData": asset->metadata
+    },
+    imageGalleryMobile[]{
+      ...,
+      "imageData": asset->metadata
     }
   }
 `)
@@ -33,11 +37,14 @@ export const projectBySlugQuery = defineQuery(`
   *[_type == "project" && slug.current == $slug][0] {
     _id,
     _type,
+    artNumber,
     title,
     "slug": slug.current,
+    technique,
+    location,
+    material,
     year,
-    description,
-    locationPhotos[]{
+    photos[]{
       ...,
       "imageData": asset->metadata
     }
@@ -45,14 +52,17 @@ export const projectBySlugQuery = defineQuery(`
 `)
 
 export const allProjectsQuery = defineQuery(`
-  *[_type == "project"] | order(year desc) {
+  *[_type == "project"] | order(artNumber asc) {
     _id,
     _type,
+    artNumber,
     title,
     "slug": slug.current,
+    technique,
+    location,
+    material,
     year,
-    description,
-    locationPhotos[0]{
+    photos[]{
       ...,
       "imageData": asset->metadata
     }

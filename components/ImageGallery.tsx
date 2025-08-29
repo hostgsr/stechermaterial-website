@@ -1,4 +1,6 @@
 // @ts-nocheck
+'use client'
+
 import {resolveHref} from '@/sanity/lib/utils'
 import {AnimatePresence, motion} from 'framer-motion'
 import Link from 'next/link'

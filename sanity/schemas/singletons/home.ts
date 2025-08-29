@@ -40,19 +40,33 @@ export default defineType({
               },
             ],
           },
-          fields: [
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Alt text',
-              description: 'Alternative text for accessibility',
-            },
-            {
-              name: 'caption',
-              title: 'Caption',
-              type: 'string',
-            },
-          ],
+        },
+      ],
+    }),
+    defineField({
+      name: 'imageGalleryMobile',
+      title: 'Image Gallery Mobile',
+      description: 'Gallery of images for the home page mobile',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: {
+            hotspot: true,
+            accept: 'image/*',
+            sources: [
+              {
+                name: 'webp',
+                format: 'webp',
+                options: {quality: 100},
+              },
+              {
+                name: 'png',
+                format: 'png',
+                options: {quality: 100},
+              },
+            ],
+          },
         },
       ],
     }),

@@ -5,7 +5,7 @@ import {Header} from '@/components/Header'
 import ImageComponent from '@/components/ImageComponent'
 import {urlForImage} from '@/sanity/lib/utils'
 import {motion} from 'framer-motion'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import type {PathSegment} from 'sanity'
 import {WorksNavigation} from './WorksNavigation'
 
@@ -40,19 +40,19 @@ export default function WorkSlugContent({data, marqueeText}: WorkSlugContentProp
     setSelectedImageIndex(null)
   }
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (selectedImageIndex !== null && images && images.length > 0) {
       const newIndex = selectedImageIndex === 0 ? images.length - 1 : selectedImageIndex - 1
       setSelectedImageIndex(newIndex)
     }
-  }
+  }, [selectedImageIndex, images])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (selectedImageIndex !== null && images && images.length > 0) {
       const newIndex = selectedImageIndex === images.length - 1 ? 0 : selectedImageIndex + 1
       setSelectedImageIndex(newIndex)
     }
-  }
+  }, [selectedImageIndex, images])
 
   const handleImageClickInLightbox = () => {
     handleNext()
@@ -61,17 +61,18 @@ export default function WorkSlugContent({data, marqueeText}: WorkSlugContentProp
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isLightboxOpen) return
+      if (!isLightboxOpen || !images) return
 
       switch (event.key) {
         case 'Escape':
+          event.preventDefault()
           handleCloseLightbox()
           break
         case 'ArrowLeft':
+          event.preventDefault()
           handlePrevious()
           break
         case 'ArrowRight':
-        case ' ':
           event.preventDefault()
           handleNext()
           break
@@ -80,7 +81,7 @@ export default function WorkSlugContent({data, marqueeText}: WorkSlugContentProp
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isLightboxOpen, selectedImageIndex, images])
+  }, [isLightboxOpen, selectedImageIndex, images, handleNext, handlePrevious])
 
   const currentImage = selectedImageIndex !== null && images ? images[selectedImageIndex] : null
 

@@ -10,9 +10,16 @@ export default defineType({
   // liveEdit: true,
   fields: [
     defineField({
+      name: 'artNumber',
+      title: 'Art Nr.',
+      description: 'Unique art number for this project',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'title',
-      description: 'This field is the title of your project.',
-      title: 'Title',
+      description: 'Project/Title - The main title of your project.',
+      title: 'Project/Title',
       type: 'string',
       validation: (rule) => rule.required(),
     }),
@@ -28,21 +35,37 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'technique',
+      title: 'Technique',
+      description: 'The technique used for this project',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'location',
+      title: 'Location',
+      description: 'Where this project is located or was created',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'material',
+      title: 'Material',
+      description: 'Materials used in this project',
+      type: 'text',
+      rows: 2,
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'year',
       title: 'Year',
       type: 'string',
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'description',
-      title: 'Description',
-      type: 'text',
-      rows: 4,
-    }),
-    defineField({
-      name: 'locationPhotos',
-      title: 'Location Photos',
-      description: 'Array of photos for this project location',
+      name: 'photos',
+      title: 'Photos',
+      description: 'Array of photos for this project',
       type: 'array',
       of: [
         {
@@ -84,12 +107,13 @@ export default defineType({
   preview: {
     select: {
       title: 'title',
+      artNumber: 'artNumber',
       year: 'year',
-      media: 'locationPhotos.0',
+      media: 'photos.0',
     },
-    prepare({title, year, media}) {
+    prepare({title, artNumber, year, media}) {
       return {
-        title: title,
+        title: `${artNumber} - ${title}`,
         subtitle: year,
         media: media,
       }
