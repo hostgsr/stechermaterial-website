@@ -63,6 +63,22 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'description',
+      title: 'Description',
+      description: 'Description of the project',
+      type: 'text',
+      rows: 8,
+    }),
+    defineField({
+      name: 'audioFile',
+      title: 'Audio File',
+      description: 'Upload a sound file for the project',
+      type: 'file',
+      options: {
+        accept: 'audio/*', // Accepts all audio file types
+      },
+    }),
+    defineField({
       name: 'photos',
       title: 'Photos',
       description: 'Array of photos for this project',

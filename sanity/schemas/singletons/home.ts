@@ -44,6 +44,63 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'audioFile',
+      title: 'Audio File',
+      description: 'Upload a sound file for the home page',
+      type: 'file',
+      options: {
+        accept: 'audio/*', // Accepts all audio file types
+      },
+    }),
+    defineField({
+      name: 'contactEmail',
+      title: 'Contact Email',
+      description: 'Email address for the home page',
+      type: 'string',
+    }),
+    defineField({
+      name: 'description',
+      title: 'About Description',
+      description: 'Rich text description with links for the home page',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'H1', value: 'h1'},
+            {title: 'H2', value: 'h2'},
+            {title: 'H3', value: 'h3'},
+            {title: 'Quote', value: 'blockquote'},
+          ],
+          marks: {
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+            ],
+            annotations: [
+              {
+                title: 'URL',
+                name: 'link',
+                type: 'object',
+                fields: [
+                  {
+                    title: 'URL',
+                    name: 'href',
+                    type: 'url',
+                    validation: (rule) =>
+                      rule.uri({
+                        scheme: ['http', 'https', 'mailto', 'tel'],
+                      }),
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    }),
+    defineField({
       name: 'imageGalleryMobile',
       title: 'Image Gallery Mobile',
       description: 'Gallery of images for the home page mobile',

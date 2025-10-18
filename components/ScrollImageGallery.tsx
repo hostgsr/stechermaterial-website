@@ -3,10 +3,12 @@
 import {urlForImage} from '@/sanity/lib/utils'
 import {motion, useScroll, useTransform} from 'framer-motion'
 import {useEffect, useRef, useState} from 'react'
+import {ScrollControlledAudio} from './ScrollControlledAudio'
 
 interface ScrollImageGalleryProps {
   images: any[]
   mobileImages: any[]
+  audioFile?: any
 }
 
 interface ImageItemProps {
@@ -45,13 +47,13 @@ function ImageItem({image, index, totalImages, scrollYProgress, isMobile}: Image
         src={urlForImage(image)?.url()}
         alt={`Gallery image ${index + 1}`}
         className="w-full h-full object-cover"
-        style={{scale}}
+        // style={{scale}}
       />
     </motion.div>
   )
 }
 
-export function ScrollImageGallery({images, mobileImages}: ScrollImageGalleryProps) {
+export function ScrollImageGallery({images, mobileImages, audioFile}: ScrollImageGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
 
@@ -93,6 +95,15 @@ export function ScrollImageGallery({images, mobileImages}: ScrollImageGalleryPro
       style={{height: `${validImages.length * 100}vh`}}
       className="relative w-full"
     >
+      {/* Scroll-controlled audio */}
+      {audioFile && (
+        <ScrollControlledAudio
+          audioFile={audioFile}
+          scrollYProgress={scrollYProgress}
+          isActive={true}
+        />
+      )}
+
       <div className="sticky top-0 w-full h-screen overflow-hidden">
         {validImages.map((image, index) => (
           <ImageItem

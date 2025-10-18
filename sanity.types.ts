@@ -42,28 +42,6 @@ export type SanityImageDimensions = {
   aspectRatio?: number
 }
 
-export type SanityFileAsset = {
-  _id: string
-  _type: 'sanity.fileAsset'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  originalFilename?: string
-  label?: string
-  title?: string
-  description?: string
-  altText?: string
-  sha1hash?: string
-  extension?: string
-  mimeType?: string
-  size?: number
-  assetId?: string
-  uploadId?: string
-  path?: string
-  url?: string
-  source?: SanityAssetSourceData
-}
-
 export type Geopoint = {
   _type: 'geopoint'
   lat?: number
@@ -84,6 +62,17 @@ export type Project = {
   location?: string
   material?: string
   year?: string
+  description?: string
+  audioFile?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  }
   photos?: Array<{
     asset?: {
       _ref: string
@@ -124,11 +113,72 @@ export type Home = {
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
-    alt?: string
-    caption?: string
     _type: 'image'
     _key: string
   }>
+  audioFile?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  }
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  imageGalleryMobile?: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+}
+
+export type SanityFileAsset = {
+  _id: string
+  _type: 'sanity.fileAsset'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  originalFilename?: string
+  label?: string
+  title?: string
+  description?: string
+  altText?: string
+  sha1hash?: string
+  extension?: string
+  mimeType?: string
+  size?: number
+  assetId?: string
+  uploadId?: string
+  path?: string
+  url?: string
+  source?: SanityAssetSourceData
 }
 
 export type SanityImageCrop = {
@@ -192,11 +242,11 @@ export type AllSanitySchemaTypes =
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
-  | SanityFileAsset
   | Geopoint
   | Project
   | Slug
   | Home
+  | SanityFileAsset
   | SanityImageCrop
   | SanityImageHotspot
   | SanityImageAsset
@@ -205,11 +255,40 @@ export type AllSanitySchemaTypes =
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./sanity/lib/queries.ts
 // Variable: homePageQuery
-// Query: *[_type == "home"][0]{    _id,    _type,    title,    imageGallery[]{      ...,      "imageData": asset->metadata    }  }
+// Query: *[_type == "home"][0]{    _id,    _type,    title,    description,    audioFile,    imageGallery[]{      ...,      "imageData": asset->metadata    },    imageGalleryMobile[]{      ...,      "imageData": asset->metadata    }  }
 export type HomePageQueryResult = {
   _id: string
   _type: 'home'
   title: string | null
+  description: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'normal'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  contactEmail: string | null
+  audioFile: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  } | null
   imageGallery: Array<{
     asset?: {
       _ref: string
@@ -220,8 +299,20 @@ export type HomePageQueryResult = {
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
-    alt?: string
-    caption?: string
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  }> | null
+  imageGalleryMobile: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
     _type: 'image'
     _key: string
     imageData: SanityImageMetadata | null
@@ -236,7 +327,7 @@ export type MarqueeTextQueryResult = {
 // Query: *[_type == "page" && slug.current == $slug][0] {    _id,    _type,    body,    overview,    title,    "slug": slug.current,  }
 export type PagesBySlugQueryResult = null
 // Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    year,    photos[]{      ...,      "imageData": asset->metadata    }  }
+// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    year,    description,    audioFile,    photos[]{      ...,      "imageData": asset->metadata    }  }
 export type ProjectBySlugQueryResult = {
   _id: string
   _type: 'project'
@@ -247,6 +338,17 @@ export type ProjectBySlugQueryResult = {
   location: string | null
   material: string | null
   year: string | null
+  description: string | null
+  audioFile: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  } | null
   photos: Array<{
     asset?: {
       _ref: string
@@ -265,7 +367,7 @@ export type ProjectBySlugQueryResult = {
   }> | null
 } | null
 // Variable: allProjectsQuery
-// Query: *[_type == "project"] | order(year desc) {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    year,    photos[]{      ...,      "imageData": asset->metadata    }  }
+// Query: *[_type == "project"] | order(artNumber asc) {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    description,    audioFile,    year,    photos[]{      ...,      "imageData": asset->metadata    }  }
 export type AllProjectsQueryResult = Array<{
   _id: string
   _type: 'project'
@@ -275,6 +377,17 @@ export type AllProjectsQueryResult = Array<{
   technique: string | null
   location: string | null
   material: string | null
+  description: string | null
+  audioFile: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  } | null
   year: string | null
   photos: Array<{
     asset?: {
@@ -341,11 +454,11 @@ export type WorksByYearQueryResult = {
 
 declare module '@sanity/client' {
   interface SanityQueries {
-    '\n  *[_type == "home"][0]{\n    _id,\n    _type,\n    title,\n    imageGallery[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': HomePageQueryResult
+    '\n  *[_type == "home"][0]{\n    _id,\n    _type,\n    title,\n    description,\n    audioFile,\n    imageGallery[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    imageGalleryMobile[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': HomePageQueryResult
     '\n  *[_type == "home"][0]{\n    marqueeText\n  }\n': MarqueeTextQueryResult
     '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    _type,\n    body,\n    overview,\n    title,\n    "slug": slug.current,\n  }\n': PagesBySlugQueryResult
-    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    year,\n    photos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ProjectBySlugQueryResult
-    '\n  *[_type == "project"] | order(year desc) {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    year,\n    photos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllProjectsQueryResult
+    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    year,\n    description,\n    audioFile,\n    photos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ProjectBySlugQueryResult
+    '\n  *[_type == "project"] | order(artNumber asc) {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    description,\n    audioFile,\n    year,\n    photos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllProjectsQueryResult
     '\n  *[_type == "work" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    descriptionMedium,\n    description,\n    year,\n    size,\n    location,\n    classification,\n    publications[]{\n      title,\n      year,\n      description,\n      file,\n      link\n    }\n  }\n': WorkBySlugQueryResult
     '\n  *[_type == "work"] | order(year desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    year,\n    classification,\n    size,\n    location\n  }\n': AllWorksQueryResult
     '\n  *[_type == "exhibition" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    endDate,\n    isSolo,\n    isCurrent,  \n    shortDescription,\n    photoCredits,\n    description,\n    location,\n    assignedWorks[]->{\n      _id,\n      title,\n      "slug": slug.current,\n      images[0]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification\n    },\n    exhibitionPhotos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ExhibitionBySlugQueryResult

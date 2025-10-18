@@ -5,6 +5,9 @@ export const homePageQuery = defineQuery(`
     _id,
     _type,
     title,
+    description,
+    contactEmail,
+    audioFile,
     imageGallery[]{
       ...,
       "imageData": asset->metadata
@@ -44,6 +47,8 @@ export const projectBySlugQuery = defineQuery(`
     location,
     material,
     year,
+    description,
+    audioFile,
     photos[]{
       ...,
       "imageData": asset->metadata
@@ -52,7 +57,7 @@ export const projectBySlugQuery = defineQuery(`
 `)
 
 export const allProjectsQuery = defineQuery(`
-  *[_type == "project"] | order(artNumber asc) {
+  *[_type == "project"] | order(artNumber desc) {
     _id,
     _type,
     artNumber,
@@ -61,6 +66,8 @@ export const allProjectsQuery = defineQuery(`
     technique,
     location,
     material,
+    description,
+    audioFile,
     year,
     photos[]{
       ...,

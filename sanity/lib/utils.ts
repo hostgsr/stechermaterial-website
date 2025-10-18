@@ -39,6 +39,35 @@ export function urlForOpenGraphImage(image: Image | null | undefined) {
   return urlForImage(image)?.width(1200).height(627).fit('crop').url()
 }
 
+// Utility function to generate URLs for file assets (like audio files)
+export function urlForFile(file: any) {
+  if (!file?.asset?._ref) {
+    return undefined
+  }
+
+  try {
+    const ref = file.asset._ref
+    const parts = ref.split('-')
+
+    if (parts.length < 3) {
+      console.warn('Invalid file reference format:', ref)
+      return undefined
+    }
+
+    const [, id, extension] = parts
+
+    if (!id || !extension) {
+      console.warn('Missing id or extension in file reference:', ref)
+      return undefined
+    }
+
+    return `https://cdn.sanity.io/files/${projectId}/${dataset}/${id}.${extension}`
+  } catch (error) {
+    console.error('Error generating file URL:', error)
+    return undefined
+  }
+}
+
 export function resolveHref(documentType?: string, slug?: string | null): string | undefined {
   switch (documentType) {
     case 'home':
