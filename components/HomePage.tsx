@@ -27,6 +27,8 @@ interface Project {
   description: string
   photos: any[]
   audioFile?: any
+  videoUrl?: string
+  videoPoster?: any
 }
 
 // Project item component with grid layout
@@ -38,6 +40,9 @@ const ProjectItem = ({project}: {project: Project}) => {
   // Get audio URL if audioFile exists and is valid
   const audioUrl = project.audioFile ? urlForFile(project.audioFile) : null
   const hasValidAudio = Boolean(audioUrl)
+
+  // Get video poster URL if videoPoster exists
+  const videoPosterUrl = project.videoPoster ? urlForImage(project.videoPoster) : null
 
   const handleExpand = () => {
     setIsExpanded(!isExpanded)
@@ -86,25 +91,25 @@ const ProjectItem = ({project}: {project: Project}) => {
         className="w-full text-left py-3 text-black focus:outline-none "
       >
         {/* Project Information Grid */}
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 items-center">
+        <div className="grid grid-cols-3 md:grid-cols-12 gap-2 md:gap-4 items-center">
           {/* Art Nr. - Hidden on mobile */}
-          <div className="hidden md:block">{project.artNumber || '—'}</div>
+          <div className="hidden md:block col-span-1">{project.artNumber || '—'}</div>
 
           {/* Project/Title */}
-          <div className="col-span-1 md:col-span-1">{project.title || 'Untitled'}</div>
+          <div className="col-span-1 md:col-span-3">{project.title || 'Untitled'}</div>
 
           {/* Technique - Hidden on mobile */}
-          <div className="hidden md:block">{project.technique || '—'}</div>
+          <div className="hidden md:block md:col-span-2">{project.technique || '—'}</div>
 
           {/* Location - Hidden on mobile */}
-          <div className="hidden md:block">{project.location || '—'}</div>
+          <div className="hidden md:block md:col-span-2">{project.location || '—'}</div>
 
           {/* Material */}
-          <div className="col-span-1 md:col-span-1">{project.material || '—'}</div>
+          <div className="col-span-1 md:col-span-2 ">{project.material || '—'}</div>
 
           {/* Year and Controls */}
-          <div className="flex justify-between items-center col-span-1 md:col-span-1">
-            <span className="hidden md:block">{project.year || '—'}</span>
+          <div className="flex justify-between items-center col-span-1 md:col-span-2">
+            <span className="hidden md:block  ">{project.year || '—'}</span>
             <div className="flex items-center gap-2 ml-auto md:ml-2">
               <span>{isExpanded ? '−' : '+'}</span>
             </div>
@@ -112,62 +117,182 @@ const ProjectItem = ({project}: {project: Project}) => {
         </div>
       </button>
 
-      {/* Expanded Photos Section */}
+      {/* Expanded Content Section */}
       {isExpanded && (
         <div className="pb-4 pt-2">
-          {/* Project Photos */}
-          {project.photos && project.photos.length > 0 ? (
-            <>
-              {/* Mobile Layout - Original grid layout */}
-              <div className="md:hidden">
-                {project.description && <div className="text-sm mt-2">{project.description}</div>}
+          {/* Mobile Layout */}
+          <div className="md:hidden">
+            {/* Description first on mobile */}
+            {project.description && <div className="text-sm mb-4">{project.description}</div>}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {project.photos.map((photo, index) => (
+            {/* Main video */}
+            {project.videoUrl && (
+              <div className="mb-4">
+                <video
+                  controls
+                  className="w-full h-auto"
+                  preload="metadata"
+                  poster={videoPosterUrl || undefined}
+                >
+                  <source src={project.videoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            )}
+
+            {/* Media Gallery (Photos & Videos) */}
+            {project.photos && project.photos.length > 0 && (
+              <div className="space-y-2">
+                {project.photos.map((mediaItem, index) => {
+                  // Check if it's a video object
+                  if (mediaItem._type === 'video') {
+                    const posterUrl = mediaItem.poster ? urlForImage(mediaItem.poster) : null
+                    return (
+                      <div key={index} className="w-full">
+                        <video
+                          controls
+                          className="w-full h-auto"
+                          preload="metadata"
+                          poster={posterUrl || undefined}
+                        >
+                          <source src={mediaItem.videoSrc} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                        {mediaItem.caption && (
+                          <p className="text-[10px] mt-1">{mediaItem.caption}</p>
+                        )}
+                      </div>
+                    )
+                  }
+
+                  // It's an image
+                  return (
                     <div key={index} className="overflow-hidden">
                       <ImageComponent
-                        image={photo}
-                        placeholderSrc={photo}
+                        image={mediaItem}
+                        placeholderSrc={mediaItem}
                         classname="w-full h-auto object-contain transition-transform duration-300"
                         fullQuality={true}
                       />
-                      {photo.caption && <p className="text-[10px]">{photo.caption}</p>}
+                      {mediaItem.caption && <p className="text-[10px]">{mediaItem.caption}</p>}
                     </div>
-                  ))}
-                </div>
+                  )
+                })}
               </div>
+            )}
+          </div>
 
-              {/* Desktop Layout - Images with interspersed description */}
-              <div className="hidden md:block">
-                <div className="grid grid-cols-4 gap-4 items-start">
-                  {project.photos.map((photo, index) => {
-                    // Show description after every 2 images, starting after the 2nd image
-                    const showDescriptionAfter = index === 1 && project.description
+          {/* Desktop Layout */}
+          <div className="hidden md:block">
+            <div className="grid grid-cols-4 gap-4 items-start">
+              {/* Main video first - spans 2 columns minimum */}
+              {project.videoUrl && (
+                <div className="col-span-2 mb-4">
+                  <video
+                    controls
+                    className="w-full h-auto"
+                    preload="metadata"
+                    poster={videoPosterUrl || undefined}
+                  >
+                    <source src={project.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )}
 
-                    return (
-                      <React.Fragment key={index}>
-                        <div className="overflow-hidden">
-                          <ImageComponent
-                            image={photo}
-                            placeholderSrc={photo}
-                            classname="w-full h-auto object-contain transition-transform duration-300"
-                            fullQuality={true}
-                          />
-                          {photo.caption && <p className="text-[10px] mt-1">{photo.caption}</p>}
-                        </div>
+              {/* Media Gallery with smart description insertion */}
+              {project.photos &&
+                project.photos.length > 0 &&
+                (() => {
+                  const hasVideos = project.photos.some((item) => item._type === 'video')
+                  const elements = []
+                  let descriptionInserted = false
 
-                        {showDescriptionAfter && (
-                          <div className="col-span-2 text-sm self-start">{project.description}</div>
+                  // Separate videos and images
+                  const videos = project.photos.filter((item) => item._type === 'video')
+                  const images = project.photos.filter((item) => item._type !== 'video')
+
+                  // Add videos first
+                  videos.forEach((videoItem, index) => {
+                    const posterUrl = videoItem.poster ? urlForImage(videoItem.poster) : null
+                    elements.push(
+                      <div key={`video-${index}`} className="col-span-2 overflow-hidden">
+                        <video
+                          controls
+                          className="w-full h-auto"
+                          preload="metadata"
+                          poster={posterUrl || undefined}
+                        >
+                          <source src={videoItem.videoSrc} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                        {videoItem.caption && (
+                          <p className="text-[10px] mt-1">{videoItem.caption}</p>
                         )}
-                      </React.Fragment>
+                      </div>,
                     )
-                  })}
-                </div>
-              </div>
-            </>
-          ) : (
-            <p className="text-black italic">No photos available</p>
-          )}
+                  })
+
+                  // Add description after videos (if there are videos)
+                  if (project.description && hasVideos) {
+                    elements.push(
+                      <div key="description" className="col-span-2 text-sm self-start">
+                        {project.description}
+                      </div>,
+                    )
+                    descriptionInserted = true
+                  }
+
+                  // Add images after description
+                  images.forEach((imageItem, index) => {
+                    elements.push(
+                      <div key={`image-${index}`} className="overflow-hidden">
+                        <ImageComponent
+                          image={imageItem}
+                          placeholderSrc={imageItem}
+                          classname="w-full h-auto object-contain transition-transform duration-300"
+                          fullQuality={true}
+                        />
+                        {imageItem.caption && (
+                          <p className="text-[10px] mt-1">{imageItem.caption}</p>
+                        )}
+                      </div>,
+                    )
+
+                    // If no videos, insert description after 2nd image
+                    if (project.description && !hasVideos && !descriptionInserted && index === 1) {
+                      elements.push(
+                        <div key="description" className="col-span-2 text-sm self-start">
+                          {project.description}
+                        </div>,
+                      )
+                      descriptionInserted = true
+                    }
+                  })
+
+                  // If description wasn't inserted and there's no main video, show it at the beginning
+                  if (
+                    project.description &&
+                    !descriptionInserted &&
+                    !project.videoUrl &&
+                    !hasVideos
+                  ) {
+                    elements.unshift(
+                      <div key="description-fallback" className="col-span-2 text-sm self-start">
+                        {project.description}
+                      </div>,
+                    )
+                  }
+
+                  return elements
+                })()}
+            </div>
+          </div>
+
+          {/* Fallback if no content */}
+          {!project.videoUrl &&
+            (!project.photos || project.photos.length === 0) &&
+            !project.description && <p className="text-black italic">No content available</p>}
         </div>
       )}
     </div>
@@ -233,7 +358,7 @@ export function HomePage({data}: HomePageProps) {
   }, [])
 
   return (
-    <div className="relative text-black">
+    <div className="relative bg-white text-black">
       {/* Scroll-based Image Gallery */}
       {imageGallery && imageGallery.length > 0 && (
         <ScrollImageGallery
@@ -291,13 +416,13 @@ export function HomePage({data}: HomePageProps) {
                 </div>
               </div>
               {/* Header Row */}
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 py-3 border-black">
-                <div className="hidden md:block">[Art Nr.]</div>
-                <div className="col-span-1 md:col-span-1">[Project/Title]</div>
-                <div className="hidden md:block">[Technique]</div>
-                <div className="hidden md:block">[Location]</div>
-                <div className="col-span-1 md:col-span-1">[Material]</div>
-                <div className="col-span-1 md:col-span-1 hidden md:block">[Year]</div>
+              <div className="grid grid-cols-3 md:grid-cols-12 gap-2 md:gap-4 py-3 border-black">
+                <div className="hidden md:block col-span-1">[Art Nr.]</div>
+                <div className="col-span-1 md:col-span-3">[Project/Title]</div>
+                <div className="hidden md:block md:col-span-2">[Technique]</div>
+                <div className="hidden md:block md:col-span-2">[Location]</div>
+                <div className="col-span-1 md:col-span-2">[Material]</div>
+                <div className="col-span-1 md:col-span-2 hidden md:block">[Year]</div>
               </div>
 
               {/* Projects List */}

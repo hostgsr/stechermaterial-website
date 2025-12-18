@@ -48,10 +48,25 @@ export const projectBySlugQuery = defineQuery(`
     material,
     year,
     description,
+    videoUrl,
+    videoPoster{
+      ...,
+      "imageData": asset->metadata
+    },
     audioFile,
     photos[]{
       ...,
-      "imageData": asset->metadata
+      _type == 'image' => {
+        ...,
+        "imageData": asset->metadata
+      },
+      _type == 'video' => {
+        ...,
+        poster{
+          ...,
+          "imageData": asset->metadata
+        }
+      }
     }
   }
 `)
@@ -67,11 +82,26 @@ export const allProjectsQuery = defineQuery(`
     location,
     material,
     description,
+    videoUrl,
+    videoPoster{
+      ...,
+      "imageData": asset->metadata
+    },
     audioFile,
     year,
     photos[]{
       ...,
-      "imageData": asset->metadata
+      _type == 'image' => {
+        ...,
+        "imageData": asset->metadata
+      },
+      _type == 'video' => {
+        ...,
+        poster{
+          ...,
+          "imageData": asset->metadata
+        }
+      }
     }
   }
 `)

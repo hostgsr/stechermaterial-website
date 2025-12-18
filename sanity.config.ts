@@ -10,6 +10,7 @@ import project from '@/sanity/schemas/documents/project'
 import home from '@/sanity/schemas/singletons/home'
 import {visionTool} from '@sanity/vision'
 import {buildLegacyTheme, defineConfig} from 'sanity'
+import {media} from 'sanity-plugin-media'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
@@ -59,6 +60,8 @@ export default defineConfig({
     singletonPlugin([home.name]),
     // Add an image asset source for Unsplash
     unsplashImageAsset(),
+    // Media plugin for better asset management
+    media(),
     // Vision lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({defaultApiVersion: apiVersion}),

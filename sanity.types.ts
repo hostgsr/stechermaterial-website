@@ -63,17 +63,8 @@ export type Project = {
   material?: string
   year?: string
   description?: string
-  audioFile?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
-    }
-    media?: unknown
-    _type: 'file'
-  }
-  photos?: Array<{
+  videoUrl?: string
+  videoPoster?: {
     asset?: {
       _ref: string
       _type: 'reference'
@@ -84,16 +75,54 @@ export type Project = {
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     alt?: string
-    caption?: string
     _type: 'image'
-    _key: string
-  }>
-}
-
-export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
+  }
+  audioFile?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  }
+  photos?: Array<
+    | {
+        asset?: {
+          _ref: string
+          _type: 'reference'
+          _weak?: boolean
+          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+        }
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        _type: 'image'
+        _key: string
+      }
+    | {
+        videoSrc?: string
+        poster?: {
+          asset?: {
+            _ref: string
+            _type: 'reference'
+            _weak?: boolean
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+          }
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          _type: 'image'
+        }
+        alt?: string
+        caption?: string
+        _type: 'video'
+        _key: string
+      }
+  >
 }
 
 export type Home = {
@@ -126,6 +155,7 @@ export type Home = {
     media?: unknown
     _type: 'file'
   }
+  contactEmail?: string
   description?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -238,13 +268,27 @@ export type SanityImageMetadata = {
   isOpaque?: boolean
 }
 
+export type MediaTag = {
+  _id: string
+  _type: 'media.tag'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name?: Slug
+}
+
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
+}
+
 export type AllSanitySchemaTypes =
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
   | Geopoint
   | Project
-  | Slug
   | Home
   | SanityFileAsset
   | SanityImageCrop
@@ -252,10 +296,12 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | SanityAssetSourceData
   | SanityImageMetadata
+  | MediaTag
+  | Slug
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./sanity/lib/queries.ts
 // Variable: homePageQuery
-// Query: *[_type == "home"][0]{    _id,    _type,    title,    description,    audioFile,    imageGallery[]{      ...,      "imageData": asset->metadata    },    imageGalleryMobile[]{      ...,      "imageData": asset->metadata    }  }
+// Query: *[_type == "home"][0]{    _id,    _type,    title,    description,    contactEmail,    audioFile,    imageGallery[]{      ...,      "imageData": asset->metadata    },    imageGalleryMobile[]{      ...,      "imageData": asset->metadata    }  }
 export type HomePageQueryResult = {
   _id: string
   _type: 'home'
@@ -327,7 +373,7 @@ export type MarqueeTextQueryResult = {
 // Query: *[_type == "page" && slug.current == $slug][0] {    _id,    _type,    body,    overview,    title,    "slug": slug.current,  }
 export type PagesBySlugQueryResult = null
 // Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    year,    description,    audioFile,    photos[]{      ...,      "imageData": asset->metadata    }  }
+// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    year,    description,    videoUrl,    videoPoster{      ...,      "imageData": asset->metadata    },    audioFile,    photos[]{      ...,      _type == 'image' => {        ...,        "imageData": asset->metadata      },      _type == 'video' => {        ...,        poster{          ...,          "imageData": asset->metadata        }      }    }  }
 export type ProjectBySlugQueryResult = {
   _id: string
   _type: 'project'
@@ -339,17 +385,8 @@ export type ProjectBySlugQueryResult = {
   material: string | null
   year: string | null
   description: string | null
-  audioFile: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
-    }
-    media?: unknown
-    _type: 'file'
-  } | null
-  photos: Array<{
+  videoUrl: string | null
+  videoPoster: {
     asset?: {
       _ref: string
       _type: 'reference'
@@ -360,14 +397,60 @@ export type ProjectBySlugQueryResult = {
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     alt?: string
-    caption?: string
     _type: 'image'
-    _key: string
     imageData: SanityImageMetadata | null
-  }> | null
+  } | null
+  audioFile: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+    }
+    media?: unknown
+    _type: 'file'
+  } | null
+  photos: Array<
+    | {
+        asset?: {
+          _ref: string
+          _type: 'reference'
+          _weak?: boolean
+          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+        }
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        _type: 'image'
+        _key: string
+        imageData: SanityImageMetadata | null
+      }
+    | {
+        videoSrc?: string
+        poster: {
+          asset?: {
+            _ref: string
+            _type: 'reference'
+            _weak?: boolean
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+          }
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          _type: 'image'
+          imageData: SanityImageMetadata | null
+        } | null
+        alt?: string
+        caption?: string
+        _type: 'video'
+        _key: string
+      }
+  > | null
 } | null
 // Variable: allProjectsQuery
-// Query: *[_type == "project"] | order(artNumber asc) {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    description,    audioFile,    year,    photos[]{      ...,      "imageData": asset->metadata    }  }
+// Query: *[_type == "project"] | order(artNumber desc) {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    description,    videoUrl,    videoPoster{      ...,      "imageData": asset->metadata    },    audioFile,    year,    photos[]{      ...,      _type == 'image' => {        ...,        "imageData": asset->metadata      },      _type == 'video' => {        ...,        poster{          ...,          "imageData": asset->metadata        }      }    }  }
 export type AllProjectsQueryResult = Array<{
   _id: string
   _type: 'project'
@@ -378,6 +461,21 @@ export type AllProjectsQueryResult = Array<{
   location: string | null
   material: string | null
   description: string | null
+  videoUrl: string | null
+  videoPoster: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+    imageData: SanityImageMetadata | null
+  } | null
   audioFile: {
     asset?: {
       _ref: string
@@ -389,22 +487,44 @@ export type AllProjectsQueryResult = Array<{
     _type: 'file'
   } | null
   year: string | null
-  photos: Array<{
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    caption?: string
-    _type: 'image'
-    _key: string
-    imageData: SanityImageMetadata | null
-  }> | null
+  photos: Array<
+    | {
+        asset?: {
+          _ref: string
+          _type: 'reference'
+          _weak?: boolean
+          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+        }
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        _type: 'image'
+        _key: string
+        imageData: SanityImageMetadata | null
+      }
+    | {
+        videoSrc?: string
+        poster: {
+          asset?: {
+            _ref: string
+            _type: 'reference'
+            _weak?: boolean
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+          }
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          _type: 'image'
+          imageData: SanityImageMetadata | null
+        } | null
+        alt?: string
+        caption?: string
+        _type: 'video'
+        _key: string
+      }
+  > | null
 }>
 // Variable: workBySlugQuery
 // Query: *[_type == "work" && slug.current == $slug][0] {    _id,    _type,    title,    "slug": slug.current,    images[]{      ...,      "imageData": asset->metadata    },    descriptionMedium,    description,    year,    size,    location,    classification,    publications[]{      title,      year,      description,      file,      link    }  }
@@ -454,11 +574,11 @@ export type WorksByYearQueryResult = {
 
 declare module '@sanity/client' {
   interface SanityQueries {
-    '\n  *[_type == "home"][0]{\n    _id,\n    _type,\n    title,\n    description,\n    audioFile,\n    imageGallery[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    imageGalleryMobile[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': HomePageQueryResult
+    '\n  *[_type == "home"][0]{\n    _id,\n    _type,\n    title,\n    description,\n    contactEmail,\n    audioFile,\n    imageGallery[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    imageGalleryMobile[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': HomePageQueryResult
     '\n  *[_type == "home"][0]{\n    marqueeText\n  }\n': MarqueeTextQueryResult
     '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    _type,\n    body,\n    overview,\n    title,\n    "slug": slug.current,\n  }\n': PagesBySlugQueryResult
-    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    year,\n    description,\n    audioFile,\n    photos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ProjectBySlugQueryResult
-    '\n  *[_type == "project"] | order(artNumber asc) {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    description,\n    audioFile,\n    year,\n    photos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllProjectsQueryResult
+    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    year,\n    description,\n    videoUrl,\n    videoPoster{\n      ...,\n      "imageData": asset->metadata\n    },\n    audioFile,\n    photos[]{\n      ...,\n      _type == \'image\' => {\n        ...,\n        "imageData": asset->metadata\n      },\n      _type == \'video\' => {\n        ...,\n        poster{\n          ...,\n          "imageData": asset->metadata\n        }\n      }\n    }\n  }\n': ProjectBySlugQueryResult
+    '\n  *[_type == "project"] | order(artNumber desc) {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    description,\n    videoUrl,\n    videoPoster{\n      ...,\n      "imageData": asset->metadata\n    },\n    audioFile,\n    year,\n    photos[]{\n      ...,\n      _type == \'image\' => {\n        ...,\n        "imageData": asset->metadata\n      },\n      _type == \'video\' => {\n        ...,\n        poster{\n          ...,\n          "imageData": asset->metadata\n        }\n      }\n    }\n  }\n': AllProjectsQueryResult
     '\n  *[_type == "work" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    descriptionMedium,\n    description,\n    year,\n    size,\n    location,\n    classification,\n    publications[]{\n      title,\n      year,\n      description,\n      file,\n      link\n    }\n  }\n': WorkBySlugQueryResult
     '\n  *[_type == "work"] | order(year desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    year,\n    classification,\n    size,\n    location\n  }\n': AllWorksQueryResult
     '\n  *[_type == "exhibition" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    endDate,\n    isSolo,\n    isCurrent,  \n    shortDescription,\n    photoCredits,\n    description,\n    location,\n    assignedWorks[]->{\n      _id,\n      title,\n      "slug": slug.current,\n      images[0]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification\n    },\n    exhibitionPhotos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ExhibitionBySlugQueryResult

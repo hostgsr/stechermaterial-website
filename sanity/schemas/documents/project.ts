@@ -70,6 +70,29 @@ export default defineType({
       rows: 8,
     }),
     defineField({
+      name: 'videoUrl',
+      title: 'Video URL',
+      description: 'URL to MP4 video file for this project',
+      type: 'string',
+    }),
+    defineField({
+      name: 'videoPoster',
+      title: 'Video Placeholder Image',
+      description: 'Placeholder image shown before video plays',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt text',
+          description: 'Alternative text for accessibility',
+        },
+      ],
+    }),
+    defineField({
       name: 'audioFile',
       title: 'Audio File',
       description: 'Upload a sound file for the project',
@@ -80,12 +103,13 @@ export default defineType({
     }),
     defineField({
       name: 'photos',
-      title: 'Photos',
-      description: 'Array of photos for this project',
+      title: 'Media Gallery',
+      description: 'Array of images and videos for this project',
       type: 'array',
       of: [
         {
           type: 'image',
+          title: 'Image',
           options: {
             hotspot: true,
             accept: 'image/*',
@@ -115,6 +139,55 @@ export default defineType({
               type: 'string',
             },
           ],
+        },
+        {
+          type: 'object',
+          name: 'video',
+          title: 'Video',
+          fields: [
+            {
+              name: 'videoSrc',
+              type: 'string',
+              title: 'Video URL',
+              description: 'URL to MP4 video file',
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: 'poster',
+              type: 'image',
+              title: 'Video Placeholder Image',
+              description: 'Placeholder image shown before video plays',
+              options: {
+                hotspot: true,
+              },
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Alt text',
+              description: 'Alternative text for accessibility',
+            },
+            {
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+            },
+          ],
+          preview: {
+            select: {
+              title: 'videoSrc',
+              media: 'poster',
+              caption: 'caption',
+            },
+            prepare({title, media, caption}) {
+              return {
+                title: `Video: ${caption || 'Untitled'}`,
+                subtitle: title,
+                media: media,
+              }
+            },
+          },
         },
       ],
       validation: (rule) => rule.required(),
