@@ -31,11 +31,112 @@ interface Project {
   videoPoster?: any
 }
 
+// Lightbox Modal Component
+const Lightbox = ({
+  images,
+  currentIndex,
+  onClose,
+  onNext,
+  onPrev,
+}: {
+  images: any[]
+  currentIndex: number
+  onClose: () => void
+  onNext: () => void
+  onPrev: () => void
+}) => {
+  const currentImage = images[currentIndex]
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') onNext()
+      if (e.key === 'ArrowLeft') onPrev()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onClose, onNext, onPrev])
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
+  const imageUrl = urlForImage(currentImage)?.url()
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white text-2xl z-50 w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors"
+        aria-label="Close lightbox"
+      >
+        ✕
+      </button>
+
+      {/* Image counter */}
+      <div className="absolute top-4 left-4 text-white text-sm">
+        {currentIndex + 1} / {images.length}
+      </div>
+
+      {/* Main image container - click to go to next */}
+      <div
+        className="w-full h-full flex items-center justify-center p-4 md:p-12 cursor-pointer"
+        onClick={onNext}
+      >
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt={currentImage.caption || 'Gallery image'}
+            className="max-w-full max-h-full object-contain"
+          />
+        )}
+      </div>
+
+      {/* Caption */}
+      {currentImage.caption && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded">
+          {currentImage.caption}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // Project item component with grid layout
 const ProjectItem = ({project}: {project: Project}) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
+  
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+  
+  // Get all images (excluding videos) for lightbox navigation
+  const lightboxImages = (project.photos || []).filter((item) => item._type !== 'video')
+  
+  const openLightbox = (imageIndex: number) => {
+    setLightboxIndex(imageIndex)
+    setLightboxOpen(true)
+  }
+  
+  const closeLightbox = () => {
+    setLightboxOpen(false)
+  }
+  
+  const nextImage = () => {
+    setLightboxIndex((prev) => (prev + 1) % lightboxImages.length)
+  }
+  
+  const prevImage = () => {
+    setLightboxIndex((prev) => (prev - 1 + lightboxImages.length) % lightboxImages.length)
+  }
 
   // Get audio URL if audioFile exists and is valid
   const audioUrl = project.audioFile ? urlForFile(project.audioFile) : null
@@ -143,41 +244,51 @@ const ProjectItem = ({project}: {project: Project}) => {
             {/* Media Gallery (Photos & Videos) */}
             {project.photos && project.photos.length > 0 && (
               <div className="space-y-2">
-                {project.photos.map((mediaItem, index) => {
-                  // Check if it's a video object
-                  if (mediaItem._type === 'video') {
-                    const posterUrl = mediaItem.poster ? urlForImage(mediaItem.poster) : null
+                {(() => {
+                  let imageIndexCounter = 0
+                  return project.photos.map((mediaItem, index) => {
+                    // Check if it's a video object
+                    if (mediaItem._type === 'video') {
+                      const posterUrl = mediaItem.poster ? urlForImage(mediaItem.poster) : null
+                      return (
+                        <div key={index} className="w-full">
+                          <video
+                            controls
+                            className="w-full h-auto"
+                            preload="metadata"
+                            poster={posterUrl || undefined}
+                          >
+                            <source src={mediaItem.videoSrc} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                          {mediaItem.caption && (
+                            <p className="text-[10px] mt-1">{mediaItem.caption}</p>
+                          )}
+                        </div>
+                      )
+                    }
+
+                    // It's an image - track index for lightbox
+                    const currentImageIndex = imageIndexCounter
+                    imageIndexCounter++
+                    
                     return (
-                      <div key={index} className="w-full">
-                        <video
-                          controls
-                          className="w-full h-auto"
-                          preload="metadata"
-                          poster={posterUrl || undefined}
-                        >
-                          <source src={mediaItem.videoSrc} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                        {mediaItem.caption && (
-                          <p className="text-[10px] mt-1">{mediaItem.caption}</p>
-                        )}
+                      <div
+                        key={index}
+                        className="overflow-hidden cursor-pointer"
+                        onClick={() => openLightbox(currentImageIndex)}
+                      >
+                        <ImageComponent
+                          image={mediaItem}
+                          placeholderSrc={mediaItem}
+                          classname="w-full h-auto object-contain transition-transform duration-300"
+                          fullQuality={true}
+                        />
+                        {mediaItem.caption && <p className="text-[10px]">{mediaItem.caption}</p>}
                       </div>
                     )
-                  }
-
-                  // It's an image
-                  return (
-                    <div key={index} className="overflow-hidden">
-                      <ImageComponent
-                        image={mediaItem}
-                        placeholderSrc={mediaItem}
-                        classname="w-full h-auto object-contain transition-transform duration-300"
-                        fullQuality={true}
-                      />
-                      {mediaItem.caption && <p className="text-[10px]">{mediaItem.caption}</p>}
-                    </div>
-                  )
-                })}
+                  })
+                })()}
               </div>
             )}
           </div>
@@ -246,7 +357,11 @@ const ProjectItem = ({project}: {project: Project}) => {
                   // Add images after description
                   images.forEach((imageItem, index) => {
                     elements.push(
-                      <div key={`image-${index}`} className="overflow-hidden">
+                      <div
+                        key={`image-${index}`}
+                        className="overflow-hidden cursor-pointer"
+                        onClick={() => openLightbox(index)}
+                      >
                         <ImageComponent
                           image={imageItem}
                           placeholderSrc={imageItem}
@@ -293,6 +408,17 @@ const ProjectItem = ({project}: {project: Project}) => {
           {!project.videoUrl &&
             (!project.photos || project.photos.length === 0) &&
             !project.description && <p className="text-black italic">No content available</p>}
+
+          {/* Lightbox Modal */}
+          {lightboxOpen && lightboxImages.length > 0 && (
+            <Lightbox
+              images={lightboxImages}
+              currentIndex={lightboxIndex}
+              onClose={closeLightbox}
+              onNext={nextImage}
+              onPrev={prevImage}
+            />
+          )}
         </div>
       )}
     </div>
