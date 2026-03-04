@@ -48,6 +48,10 @@ export const projectBySlugQuery = defineQuery(`
     material,
     year,
     description,
+    links[]{
+      title,
+      url
+    },
     videoUrl,
     videoPoster{
       ...,
@@ -82,6 +86,10 @@ export const allProjectsQuery = defineQuery(`
     location,
     material,
     description,
+    links[]{
+      title,
+      url
+    },
     videoUrl,
     videoPoster{
       ...,

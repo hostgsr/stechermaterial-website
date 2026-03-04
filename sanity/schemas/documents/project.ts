@@ -70,6 +70,34 @@ export default defineType({
       rows: 8,
     }),
     defineField({
+      name: 'links',
+      title: 'Links',
+      description: 'External links related to this project',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: 'url',
+              title: 'URL',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            },
+          ],
+          preview: {
+            select: {title: 'title', subtitle: 'url'},
+          },
+        },
+      ],
+    }),
+    defineField({
       name: 'videoUrl',
       title: 'Video URL',
       description: 'URL to MP4 video file for this project',

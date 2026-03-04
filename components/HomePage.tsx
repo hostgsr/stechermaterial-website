@@ -25,6 +25,7 @@ interface Project {
   material: string
   year: string
   description: string
+  links?: {title: string; url: string}[]
   photos: any[]
   audioFile?: any
   videoUrl?: string
@@ -224,7 +225,23 @@ const ProjectItem = ({project}: {project: Project}) => {
           {/* Mobile Layout */}
           <div className="md:hidden">
             {/* Description first on mobile */}
-            {project.description && <div className="text-sm mb-4">{project.description}</div>}
+            {project.description && <div className="text-sm mb-4 whitespace-pre-line">{project.description}</div>}
+            {project.links && project.links.length > 0 && (
+              <div className="flex flex-col text-sm mb-4 ">
+                {project.links.map((link, i) => (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border-t border-black py-1   last:border-b"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {link.title}
+                  </a>
+                ))}
+              </div>
+            )}
 
             {/* Main video */}
             {project.videoUrl && (
@@ -347,8 +364,24 @@ const ProjectItem = ({project}: {project: Project}) => {
                   // Add description after videos (if there are videos)
                   if (project.description && hasVideos) {
                     elements.push(
-                      <div key="description" className="col-span-2 text-sm self-start">
+                      <div key="description" className="col-span-2 text-sm self-start whitespace-pre-line">
                         {project.description}
+                        {project.links && project.links.length > 0 && (
+                          <div className="flex flex-col ">
+                            {project.links.map((link, i) => (
+                              <a
+                                key={i}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="border-t border-black py-1 "
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {link.title}
+                              </a>
+                            ))}
+                          </div>
+                        )}
                       </div>,
                     )
                     descriptionInserted = true
@@ -377,8 +410,24 @@ const ProjectItem = ({project}: {project: Project}) => {
                     // If no videos, insert description after 2nd image
                     if (project.description && !hasVideos && !descriptionInserted && index === 1) {
                       elements.push(
-                        <div key="description" className="col-span-2 text-sm self-start">
+                        <div key="description" className="col-span-2 text-sm self-start whitespace-pre-line">
                           {project.description}
+                          {project.links && project.links.length > 0 && (
+                            <div className="flex flex-col ">
+                              {project.links.map((link, i) => (
+                                <a
+                                  key={i}
+                                  href={link.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="border-t border-black py-1  last:border-b"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {link.title}
+                                </a>
+                              ))}
+                            </div>
+                          )}
                         </div>,
                       )
                       descriptionInserted = true
@@ -393,8 +442,24 @@ const ProjectItem = ({project}: {project: Project}) => {
                     !hasVideos
                   ) {
                     elements.unshift(
-                      <div key="description-fallback" className="col-span-2 text-sm self-start">
+                      <div key="description-fallback" className="col-span-2 text-sm self-start whitespace-pre-line">
                         {project.description}
+                        {project.links && project.links.length > 0 && (
+                          <div className="flex flex-col ">
+                            {project.links.map((link, i) => (
+                              <a
+                                key={i}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="border-t border-black py-1  last:border-b"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {link.title}
+                              </a>
+                            ))}
+                          </div>
+                        )}
                       </div>,
                     )
                   }
