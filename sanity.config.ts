@@ -6,8 +6,10 @@
 import {apiVersion, dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import * as resolve from '@/sanity/plugins/resolve'
 import {pageStructure, singletonPlugin} from '@/sanity/plugins/settings'
+import product from '@/sanity/schemas/documents/product'
 import project from '@/sanity/schemas/documents/project'
 import home from '@/sanity/schemas/singletons/home'
+import shop from '@/sanity/schemas/singletons/shop'
 import {visionTool} from '@sanity/vision'
 import {buildLegacyTheme, defineConfig} from 'sanity'
 import {media} from 'sanity-plugin-media'
@@ -44,20 +46,22 @@ export default defineConfig({
     types: [
       // Singletons
       home,
+      shop,
       // Documents
       project,
+      product,
     ],
   },
   plugins: [
     structureTool({
-      structure: pageStructure([home]),
+      structure: pageStructure([home, shop]),
     }),
     presentationTool({
       resolve,
       previewUrl: {previewMode: {enable: '/api/draft-mode/enable'}},
     }),
     // Configures the global "new document" button, and document actions, to suit the Settings document singleton
-    singletonPlugin([home.name]),
+    singletonPlugin([home.name, shop.name]),
     // Add an image asset source for Unsplash
     unsplashImageAsset(),
     // Media plugin for better asset management

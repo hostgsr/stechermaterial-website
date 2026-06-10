@@ -132,7 +132,7 @@ export default defineType({
     defineField({
       name: 'photos',
       title: 'Media Gallery',
-      description: 'Array of images and videos for this project',
+      description: 'Array of images, videos, and description blocks for this project',
       type: 'array',
       of: [
         {
@@ -165,6 +165,21 @@ export default defineType({
               name: 'caption',
               title: 'Caption',
               type: 'string',
+            },
+            {
+              name: 'colSpan',
+              title: 'Column Width (Desktop)',
+              description: 'Number of columns this block spans on desktop (1-4)',
+              type: 'number',
+              options: {
+                list: [
+                  {title: '1 column', value: 1},
+                  {title: '2 columns', value: 2},
+                  {title: '3 columns', value: 3},
+                  {title: '4 columns', value: 4},
+                ],
+              },
+              initialValue: 1,
             },
           ],
         },
@@ -201,6 +216,21 @@ export default defineType({
               title: 'Caption',
               type: 'string',
             },
+            {
+              name: 'colSpan',
+              title: 'Column Width (Desktop)',
+              description: 'Number of columns this block spans on desktop (1-4)',
+              type: 'number',
+              options: {
+                list: [
+                  {title: '1 column', value: 1},
+                  {title: '2 columns', value: 2},
+                  {title: '3 columns', value: 3},
+                  {title: '4 columns', value: 4},
+                ],
+              },
+              initialValue: 1,
+            },
           ],
           preview: {
             select: {
@@ -213,6 +243,107 @@ export default defineType({
                 title: `Video: ${caption || 'Untitled'}`,
                 subtitle: title,
                 media: media,
+              }
+            },
+          },
+        },
+        {
+          type: 'object',
+          name: 'descriptionBlock',
+          title: 'Description Block',
+          fields: [
+            {
+              name: 'colSpan',
+              title: 'Column Width (Desktop)',
+              description: 'Number of columns this block spans on desktop (1-4)',
+              type: 'number',
+              options: {
+                list: [
+                  {title: '1 column', value: 1},
+                  {title: '2 columns', value: 2},
+                  {title: '3 columns', value: 3},
+                  {title: '4 columns', value: 4},
+                ],
+              },
+              initialValue: 1,
+            },
+          ],
+          preview: {
+            prepare() {
+              return {
+                title: 'Description Block',
+                subtitle: 'Shows description text & links',
+              }
+            },
+          },
+        },
+        {
+          type: 'object',
+          name: 'productBlock',
+          title: 'Product',
+          fields: [
+            {
+              name: 'product',
+              title: 'Product',
+              type: 'reference',
+              to: [{type: 'product'}],
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: 'colSpan',
+              title: 'Column Width (Desktop)',
+              description: 'Number of columns this block spans on desktop (1-4)',
+              type: 'number',
+              options: {
+                list: [
+                  {title: '1 column', value: 1},
+                  {title: '2 columns', value: 2},
+                  {title: '3 columns', value: 3},
+                  {title: '4 columns', value: 4},
+                ],
+              },
+              initialValue: 1,
+            },
+          ],
+          preview: {
+            select: {
+              title: 'product.title',
+              media: 'product.photos.0',
+            },
+            prepare({title, media}) {
+              return {
+                title: `Product: ${title || 'Untitled'}`,
+                media: media,
+              }
+            },
+          },
+        },
+        {
+          type: 'object',
+          name: 'spacerBlock',
+          title: 'Spacer',
+          fields: [
+            {
+              name: 'colSpan',
+              title: 'Column Width (Desktop)',
+              description: 'Number of empty columns on desktop (1-4)',
+              type: 'number',
+              options: {
+                list: [
+                  {title: '1 column', value: 1},
+                  {title: '2 columns', value: 2},
+                  {title: '3 columns', value: 3},
+                  {title: '4 columns', value: 4},
+                ],
+              },
+              initialValue: 1,
+            },
+          ],
+          preview: {
+            select: {colSpan: 'colSpan'},
+            prepare({colSpan}) {
+              return {
+                title: `Spacer (${colSpan || 1} col)`,
               }
             },
           },

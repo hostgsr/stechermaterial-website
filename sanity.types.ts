@@ -63,6 +63,11 @@ export type Project = {
   material?: string
   year?: string
   description?: string
+  links?: Array<{
+    title?: string
+    url?: string
+    _key: string
+  }>
   videoUrl?: string
   videoPoster?: {
     asset?: {
@@ -100,6 +105,7 @@ export type Project = {
         crop?: SanityImageCrop
         alt?: string
         caption?: string
+        colSpan?: 1 | 2 | 3 | 4
         _type: 'image'
         _key: string
       }
@@ -119,10 +125,96 @@ export type Project = {
         }
         alt?: string
         caption?: string
+        colSpan?: 1 | 2 | 3 | 4
         _type: 'video'
         _key: string
       }
+    | {
+        colSpan?: 1 | 2 | 3 | 4
+        _type: 'descriptionBlock'
+        _key: string
+      }
+    | {
+        product?: {
+          _ref: string
+          _type: 'reference'
+          _weak?: boolean
+          [internalGroqTypeReferenceTo]?: 'product'
+        }
+        colSpan?: 1 | 2 | 3 | 4
+        _type: 'productBlock'
+        _key: string
+      }
+    | {
+        colSpan?: 1 | 2 | 3 | 4
+        _type: 'spacerBlock'
+        _key: string
+      }
   >
+}
+
+export type Product = {
+  _id: string
+  _type: 'product'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  price?: number
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h2' | 'h3' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  photos?: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+    _key: string
+  }>
+}
+
+export type Shop = {
+  _id: string
+  _type: 'shop'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  collections?: Array<{
+    title?: string
+    products?: Array<{
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      _key: string
+      [internalGroqTypeReferenceTo]?: 'product'
+    }>
+    _type: 'shopCollection'
+    _key: string
+  }>
 }
 
 export type Home = {
@@ -289,6 +381,8 @@ export type AllSanitySchemaTypes =
   | SanityImageDimensions
   | Geopoint
   | Project
+  | Product
+  | Shop
   | Home
   | SanityFileAsset
   | SanityImageCrop
@@ -373,7 +467,7 @@ export type MarqueeTextQueryResult = {
 // Query: *[_type == "page" && slug.current == $slug][0] {    _id,    _type,    body,    overview,    title,    "slug": slug.current,  }
 export type PagesBySlugQueryResult = null
 // Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    year,    description,    videoUrl,    videoPoster{      ...,      "imageData": asset->metadata    },    audioFile,    photos[]{      ...,      _type == 'image' => {        ...,        "imageData": asset->metadata      },      _type == 'video' => {        ...,        poster{          ...,          "imageData": asset->metadata        }      }    }  }
+// Query: *[_type == "project" && slug.current == $slug][0] {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    year,    description,    links[]{      title,      url    },    videoUrl,    videoPoster{      ...,      "imageData": asset->metadata    },    audioFile,    photos[]{      ...,      _type == 'image' => {        ...,        "imageData": asset->metadata,        colSpan      },      _type == 'video' => {        ...,        poster{          ...,          "imageData": asset->metadata        },        colSpan      },      _type == 'descriptionBlock' => {        ...,        colSpan      },      _type == 'productBlock' => {        ...,        colSpan,        product->{          _id,          title,          "slug": slug.current,          price,          description,          "productPhotos": photos[]{            ...,            "imageData": asset->metadata          }        }      },      _type == 'spacerBlock' => {        ...,        colSpan      }    }  }
 export type ProjectBySlugQueryResult = {
   _id: string
   _type: 'project'
@@ -385,6 +479,10 @@ export type ProjectBySlugQueryResult = {
   material: string | null
   year: string | null
   description: string | null
+  links: Array<{
+    title: string | null
+    url: string | null
+  }> | null
   videoUrl: string | null
   videoPoster: {
     asset?: {
@@ -412,6 +510,11 @@ export type ProjectBySlugQueryResult = {
   } | null
   photos: Array<
     | {
+        colSpan: 1 | 2 | 3 | 4 | null
+        _type: 'descriptionBlock'
+        _key: string
+      }
+    | {
         asset?: {
           _ref: string
           _type: 'reference'
@@ -423,9 +526,59 @@ export type ProjectBySlugQueryResult = {
         crop?: SanityImageCrop
         alt?: string
         caption?: string
+        colSpan: 1 | 2 | 3 | 4 | null
         _type: 'image'
         _key: string
         imageData: SanityImageMetadata | null
+      }
+    | {
+        product: {
+          _id: string
+          title: string | null
+          slug: string | null
+          price: number | null
+          description: Array<{
+            children?: Array<{
+              marks?: Array<string>
+              text?: string
+              _type: 'span'
+              _key: string
+            }>
+            style?: 'blockquote' | 'h2' | 'h3' | 'normal'
+            listItem?: 'bullet' | 'number'
+            markDefs?: Array<{
+              href?: string
+              _type: 'link'
+              _key: string
+            }>
+            level?: number
+            _type: 'block'
+            _key: string
+          }> | null
+          productPhotos: Array<{
+            asset?: {
+              _ref: string
+              _type: 'reference'
+              _weak?: boolean
+              [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+            }
+            media?: unknown
+            hotspot?: SanityImageHotspot
+            crop?: SanityImageCrop
+            alt?: string
+            _type: 'image'
+            _key: string
+            imageData: SanityImageMetadata | null
+          }> | null
+        } | null
+        colSpan: 1 | 2 | 3 | 4 | null
+        _type: 'productBlock'
+        _key: string
+      }
+    | {
+        colSpan: 1 | 2 | 3 | 4 | null
+        _type: 'spacerBlock'
+        _key: string
       }
     | {
         videoSrc?: string
@@ -444,13 +597,14 @@ export type ProjectBySlugQueryResult = {
         } | null
         alt?: string
         caption?: string
+        colSpan: 1 | 2 | 3 | 4 | null
         _type: 'video'
         _key: string
       }
   > | null
 } | null
 // Variable: allProjectsQuery
-// Query: *[_type == "project"] | order(artNumber desc) {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    description,    videoUrl,    videoPoster{      ...,      "imageData": asset->metadata    },    audioFile,    year,    photos[]{      ...,      _type == 'image' => {        ...,        "imageData": asset->metadata      },      _type == 'video' => {        ...,        poster{          ...,          "imageData": asset->metadata        }      }    }  }
+// Query: *[_type == "project"] | order(artNumber desc) {    _id,    _type,    artNumber,    title,    "slug": slug.current,    technique,    location,    material,    description,    links[]{      title,      url    },    videoUrl,    videoPoster{      ...,      "imageData": asset->metadata    },    audioFile,    year,    photos[]{      ...,      _type == 'image' => {        ...,        "imageData": asset->metadata,        colSpan      },      _type == 'video' => {        ...,        poster{          ...,          "imageData": asset->metadata        },        colSpan      },      _type == 'descriptionBlock' => {        ...,        colSpan      },      _type == 'productBlock' => {        ...,        colSpan,        product->{          _id,          title,          "slug": slug.current,          price,          description,          "productPhotos": photos[]{            ...,            "imageData": asset->metadata          }        }      },      _type == 'spacerBlock' => {        ...,        colSpan      }    }  }
 export type AllProjectsQueryResult = Array<{
   _id: string
   _type: 'project'
@@ -461,6 +615,10 @@ export type AllProjectsQueryResult = Array<{
   location: string | null
   material: string | null
   description: string | null
+  links: Array<{
+    title: string | null
+    url: string | null
+  }> | null
   videoUrl: string | null
   videoPoster: {
     asset?: {
@@ -489,6 +647,11 @@ export type AllProjectsQueryResult = Array<{
   year: string | null
   photos: Array<
     | {
+        colSpan: 1 | 2 | 3 | 4 | null
+        _type: 'descriptionBlock'
+        _key: string
+      }
+    | {
         asset?: {
           _ref: string
           _type: 'reference'
@@ -500,9 +663,59 @@ export type AllProjectsQueryResult = Array<{
         crop?: SanityImageCrop
         alt?: string
         caption?: string
+        colSpan: 1 | 2 | 3 | 4 | null
         _type: 'image'
         _key: string
         imageData: SanityImageMetadata | null
+      }
+    | {
+        product: {
+          _id: string
+          title: string | null
+          slug: string | null
+          price: number | null
+          description: Array<{
+            children?: Array<{
+              marks?: Array<string>
+              text?: string
+              _type: 'span'
+              _key: string
+            }>
+            style?: 'blockquote' | 'h2' | 'h3' | 'normal'
+            listItem?: 'bullet' | 'number'
+            markDefs?: Array<{
+              href?: string
+              _type: 'link'
+              _key: string
+            }>
+            level?: number
+            _type: 'block'
+            _key: string
+          }> | null
+          productPhotos: Array<{
+            asset?: {
+              _ref: string
+              _type: 'reference'
+              _weak?: boolean
+              [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+            }
+            media?: unknown
+            hotspot?: SanityImageHotspot
+            crop?: SanityImageCrop
+            alt?: string
+            _type: 'image'
+            _key: string
+            imageData: SanityImageMetadata | null
+          }> | null
+        } | null
+        colSpan: 1 | 2 | 3 | 4 | null
+        _type: 'productBlock'
+        _key: string
+      }
+    | {
+        colSpan: 1 | 2 | 3 | 4 | null
+        _type: 'spacerBlock'
+        _key: string
       }
     | {
         videoSrc?: string
@@ -521,6 +734,7 @@ export type AllProjectsQueryResult = Array<{
         } | null
         alt?: string
         caption?: string
+        colSpan: 1 | 2 | 3 | 4 | null
         _type: 'video'
         _key: string
       }
@@ -544,6 +758,122 @@ export type CollectionBySlugQueryResult = null
 // Variable: allCollectionsQuery
 // Query: *[_type == "collection" && !isPrivate] | order(date desc) {    _id,    _type,    title,    "slug": slug.current,    date,    isPrivate,    shortDescription,    location,    collectionPhotos[0]{      ...,      "imageData": asset->metadata    }  }
 export type AllCollectionsQueryResult = Array<never>
+// Variable: productBySlugQuery
+// Query: *[_type == "product" && slug.current == $slug][0] {    _id,    _type,    title,    "slug": slug.current,    price,    description,    photos[]{      ...,      "imageData": asset->metadata    }  }
+export type ProductBySlugQueryResult = {
+  _id: string
+  _type: 'product'
+  title: string | null
+  slug: string | null
+  price: number | null
+  description: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'blockquote' | 'h2' | 'h3' | 'normal'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  photos: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  }> | null
+} | null
+// Variable: allProductsQuery
+// Query: *[_type == "product"] | order(_createdAt desc) {    _id,    _type,    title,    "slug": slug.current,    price,    photos[0]{      ...,      "imageData": asset->metadata    }  }
+export type AllProductsQueryResult = Array<{
+  _id: string
+  _type: 'product'
+  title: string | null
+  slug: string | null
+  price: number | null
+  photos: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+    _key: string
+    imageData: SanityImageMetadata | null
+  } | null
+}>
+// Variable: shopQuery
+// Query: *[_type == "shop"][0]{    _id,    _type,    title,    collections[]{      _key,      title,      products[]->{        _id,        title,        "slug": slug.current,        price,        description,        "productPhotos": photos[]{          ...,          "imageData": asset->metadata        }      }    }  }
+export type ShopQueryResult = {
+  _id: string
+  _type: 'shop'
+  title: string | null
+  collections: Array<{
+    _key: string
+    title: string | null
+    products: Array<{
+      _id: string
+      title: string | null
+      slug: string | null
+      price: number | null
+      description: Array<{
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'blockquote' | 'h2' | 'h3' | 'normal'
+        listItem?: 'bullet' | 'number'
+        markDefs?: Array<{
+          href?: string
+          _type: 'link'
+          _key: string
+        }>
+        level?: number
+        _type: 'block'
+        _key: string
+      }> | null
+      productPhotos: Array<{
+        asset?: {
+          _ref: string
+          _type: 'reference'
+          _weak?: boolean
+          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+        }
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        _type: 'image'
+        _key: string
+        imageData: SanityImageMetadata | null
+      }> | null
+    }> | null
+  }> | null
+} | null
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]{    _id,    _type,    footer,    menuItems[]{      _key,      ...@->{        _type,        "slug": slug.current,        title      }    },    ogImage{      ...,      "imageData": asset->metadata    },  }
 export type SettingsQueryResult = null
@@ -577,14 +907,17 @@ declare module '@sanity/client' {
     '\n  *[_type == "home"][0]{\n    _id,\n    _type,\n    title,\n    description,\n    contactEmail,\n    audioFile,\n    imageGallery[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    imageGalleryMobile[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': HomePageQueryResult
     '\n  *[_type == "home"][0]{\n    marqueeText\n  }\n': MarqueeTextQueryResult
     '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id,\n    _type,\n    body,\n    overview,\n    title,\n    "slug": slug.current,\n  }\n': PagesBySlugQueryResult
-    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    year,\n    description,\n    videoUrl,\n    videoPoster{\n      ...,\n      "imageData": asset->metadata\n    },\n    audioFile,\n    photos[]{\n      ...,\n      _type == \'image\' => {\n        ...,\n        "imageData": asset->metadata\n      },\n      _type == \'video\' => {\n        ...,\n        poster{\n          ...,\n          "imageData": asset->metadata\n        }\n      }\n    }\n  }\n': ProjectBySlugQueryResult
-    '\n  *[_type == "project"] | order(artNumber desc) {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    description,\n    videoUrl,\n    videoPoster{\n      ...,\n      "imageData": asset->metadata\n    },\n    audioFile,\n    year,\n    photos[]{\n      ...,\n      _type == \'image\' => {\n        ...,\n        "imageData": asset->metadata\n      },\n      _type == \'video\' => {\n        ...,\n        poster{\n          ...,\n          "imageData": asset->metadata\n        }\n      }\n    }\n  }\n': AllProjectsQueryResult
+    '\n  *[_type == "project" && slug.current == $slug][0] {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    year,\n    description,\n    links[]{\n      title,\n      url\n    },\n    videoUrl,\n    videoPoster{\n      ...,\n      "imageData": asset->metadata\n    },\n    audioFile,\n    photos[]{\n      ...,\n      _type == \'image\' => {\n        ...,\n        "imageData": asset->metadata,\n        colSpan\n      },\n      _type == \'video\' => {\n        ...,\n        poster{\n          ...,\n          "imageData": asset->metadata\n        },\n        colSpan\n      },\n      _type == \'descriptionBlock\' => {\n        ...,\n        colSpan\n      },\n      _type == \'productBlock\' => {\n        ...,\n        colSpan,\n        product->{\n          _id,\n          title,\n          "slug": slug.current,\n          price,\n          description,\n          "productPhotos": photos[]{\n            ...,\n            "imageData": asset->metadata\n          }\n        }\n      },\n      _type == \'spacerBlock\' => {\n        ...,\n        colSpan\n      }\n    }\n  }\n': ProjectBySlugQueryResult
+    '\n  *[_type == "project"] | order(artNumber desc) {\n    _id,\n    _type,\n    artNumber,\n    title,\n    "slug": slug.current,\n    technique,\n    location,\n    material,\n    description,\n    links[]{\n      title,\n      url\n    },\n    videoUrl,\n    videoPoster{\n      ...,\n      "imageData": asset->metadata\n    },\n    audioFile,\n    year,\n    photos[]{\n      ...,\n      _type == \'image\' => {\n        ...,\n        "imageData": asset->metadata,\n        colSpan\n      },\n      _type == \'video\' => {\n        ...,\n        poster{\n          ...,\n          "imageData": asset->metadata\n        },\n        colSpan\n      },\n      _type == \'descriptionBlock\' => {\n        ...,\n        colSpan\n      },\n      _type == \'productBlock\' => {\n        ...,\n        colSpan,\n        product->{\n          _id,\n          title,\n          "slug": slug.current,\n          price,\n          description,\n          "productPhotos": photos[]{\n            ...,\n            "imageData": asset->metadata\n          }\n        }\n      },\n      _type == \'spacerBlock\' => {\n        ...,\n        colSpan\n      }\n    }\n  }\n': AllProjectsQueryResult
     '\n  *[_type == "work" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    descriptionMedium,\n    description,\n    year,\n    size,\n    location,\n    classification,\n    publications[]{\n      title,\n      year,\n      description,\n      file,\n      link\n    }\n  }\n': WorkBySlugQueryResult
     '\n  *[_type == "work"] | order(year desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    images[]{\n      ...,\n      "imageData": asset->metadata\n    },\n    year,\n    classification,\n    size,\n    location\n  }\n': AllWorksQueryResult
     '\n  *[_type == "exhibition" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    endDate,\n    isSolo,\n    isCurrent,  \n    shortDescription,\n    photoCredits,\n    description,\n    location,\n    assignedWorks[]->{\n      _id,\n      title,\n      "slug": slug.current,\n      images[0]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification\n    },\n    exhibitionPhotos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ExhibitionBySlugQueryResult
     '\n  *[_type == "exhibition"] | order(date desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    isCurrent,\n    isSolo,\n    shortDescription,\n    location,\n    exhibitionPhotos[0]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllExhibitionsQueryResult
     '\n  *[_type == "collection" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    isPrivate,\n    shortDescription,\n    description,\n    location,\n    assignedWorks[]->{\n      _id,\n      title,\n      "slug": slug.current,\n      images[0]{\n        ...,\n        "imageData": asset->metadata\n      },\n      year,\n      classification\n    },\n    collectionPhotos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': CollectionBySlugQueryResult
     '\n  *[_type == "collection" && !isPrivate] | order(date desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    date,\n    isPrivate,\n    shortDescription,\n    location,\n    collectionPhotos[0]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllCollectionsQueryResult
+    '\n  *[_type == "product" && slug.current == $slug][0] {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    price,\n    description,\n    photos[]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': ProductBySlugQueryResult
+    '\n  *[_type == "product"] | order(_createdAt desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    price,\n    photos[0]{\n      ...,\n      "imageData": asset->metadata\n    }\n  }\n': AllProductsQueryResult
+    '\n  *[_type == "shop"][0]{\n    _id,\n    _type,\n    title,\n    collections[]{\n      _key,\n      title,\n      products[]->{\n        _id,\n        title,\n        "slug": slug.current,\n        price,\n        description,\n        "productPhotos": photos[]{\n          ...,\n          "imageData": asset->metadata\n        }\n      }\n    }\n  }\n': ShopQueryResult
     '\n  *[_type == "settings"][0]{\n    _id,\n    _type,\n    footer,\n    menuItems[]{\n      _key,\n      ...@->{\n        _type,\n        "slug": slug.current,\n        title\n      }\n    },\n    ogImage{\n      ...,\n      "imageData": asset->metadata\n    },\n  }\n': SettingsQueryResult
     '\n  *[_type == $type && defined(slug.current)]{"slug": slug.current}\n': SlugsByTypeQueryResult
     '\n  *[_type == "publication"] | order(year desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    publicationTypes,\n    image{\n      ...,\n      "imageData": asset->metadata\n    },\n    year,\n    description,\n    file,\n    link\n  }\n': AllPublicationsQueryResult

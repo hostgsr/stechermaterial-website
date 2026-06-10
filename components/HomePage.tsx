@@ -5,6 +5,8 @@ import type {HomePageQueryResult} from '@/sanity.types'
 import {client} from '@/sanity/lib/client'
 import {allProjectsQuery} from '@/sanity/lib/queries'
 import {urlForFile, urlForImage} from '@/sanity/lib/utils'
+import {PortableText} from 'next-sanity'
+import Link from 'next/link'
 import React, {useEffect, useRef, useState} from 'react'
 import {CustomPortableText} from './CustomPortableText'
 import ImageComponent from './ImageComponent'
@@ -113,6 +115,10 @@ const Lightbox = ({
 const ProjectItem = ({project}: {project: Project}) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [expandedProductIndices, setExpandedProductIndices] = useState<number[]>([])
+  const [lastExpandedProduct, setLastExpandedProduct] = useState<number | null>(null)
+  const productRefs = useRef<Record<number, HTMLDivElement | null>>({})
+  const scrollPositions = useRef<Record<number, number>>({})
   const audioRef = useRef<HTMLAudioElement>(null)
   
   // Lightbox state
@@ -120,7 +126,7 @@ const ProjectItem = ({project}: {project: Project}) => {
   const [lightboxIndex, setLightboxIndex] = useState(0)
   
   // Get all images (excluding videos) for lightbox navigation
-  const lightboxImages = (project.photos || []).filter((item) => item._type !== 'video')
+  const lightboxImages = (project.photos || []).filter((item) => item._type !== 'video' && item._type !== 'descriptionBlock' && item._type !== 'productBlock' && item._type !== 'spacerBlock')
   
   const openLightbox = (imageIndex: number) => {
     setLightboxIndex(imageIndex)
@@ -145,6 +151,146 @@ const ProjectItem = ({project}: {project: Project}) => {
 
   // Get video poster URL if videoPoster exists
   const videoPosterUrl = project.videoPoster ? urlForImage(project.videoPoster) : null
+
+  const getColSpanClass = (span: number) => {
+    switch (span) {
+      case 2: return 'col-span-2'
+      case 3: return 'col-span-3'
+      case 4: return 'col-span-4'
+      default: return 'col-span-1'
+    }
+  }
+
+  const getProductCoverUrl = (product: any) => {
+    const photos = product?.productPhotos || []
+    return photos[0]
+      ? urlForImage(photos[0])?.width(600).height(600).fit('crop').url()
+      : null
+  }
+
+  const expandProduct = (index: number) => {
+    scrollPositions.current[index] = window.scrollY
+    setExpandedProductIndices((prev) =>
+      prev.includes(index) ? prev : [...prev, index],
+    )
+    setLastExpandedProduct(index)
+  }
+
+  useEffect(() => {
+    if (lastExpandedProduct === null) return
+    const el = productRefs.current[lastExpandedProduct]
+    if (el) {
+      el.scrollIntoView({behavior: 'smooth', block: 'start'})
+    }
+  }, [lastExpandedProduct, expandedProductIndices])
+
+  const collapseProduct = (index: number) => {
+    setExpandedProductIndices((prev) => prev.filter((i) => i !== index))
+    setLastExpandedProduct(null)
+    const savedY = scrollPositions.current[index]
+    if (savedY != null) {
+      window.scrollTo({top: savedY, behavior: 'smooth'})
+    }
+  }
+
+  const isProductExpanded = (index: number) => expandedProductIndices.includes(index)
+
+  const renderExpandedProduct = (
+    product: any,
+    index: number,
+    photos: any[],
+    variant: 'mobile' | 'desktop',
+    key?: string,
+  ) => (
+    <div
+      key={key}
+      ref={(el) => {
+        productRefs.current[index] = el
+      }}
+      className={variant === 'desktop' ? 'col-span-4 overflow-hidden scroll-mt-4' : 'overflow-hidden scroll-mt-4'}
+    >
+      <button
+        className=" mb-2 underline underline-offset-2"
+        onClick={(e) => {
+          e.stopPropagation()
+          collapseProduct(index)
+        }}
+      >
+        Close
+      </button>
+      {photos.length > 0 && (
+        <div className={`grid gap-2 ${variant === 'desktop' ? 'grid-cols-4 gap-4' : 'grid-cols-2'}`}>
+          {photos.map((photo, photoIdx) => {
+            const photoUrl = urlForImage(photo)?.width(600).height(600).fit('crop').url()
+            if (!photoUrl) return null
+            return (
+              <div key={photoIdx} className="overflow-hidden">
+                <img
+                  src={photoUrl}
+                  alt={photo.alt || `${product.title} - ${photoIdx + 1}`}
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+            )
+          })}
+        </div>
+      )}
+      <div className="mt-2 text-[14px]">
+        <p className="  ">{product.title}</p>
+        {product.price != null && (
+          <p className="">€{product.price.toFixed(2)}</p>
+        )}
+        {product.description && (
+          <div className=" mt-2 whitespace-pre-line">
+            <PortableText value={product.description} />
+          </div>
+        )}
+        <button
+          disabled
+          className="mt-3 border border-black px-3 py-1.5  uppercase tracking-wider opacity-50 cursor-not-allowed"
+        >
+          Coming Soon
+        </button>
+      </div>
+    </div>
+  )
+
+  const renderProductThumbnail = (
+    product: any,
+    index: number,
+    span = 1,
+    variant: 'mobile' | 'desktop' = 'desktop',
+  ) => {
+    const coverImageUrl = getProductCoverUrl(product)
+    const className =
+      variant === 'desktop'
+        ? `${getColSpanClass(span)} overflow-hidden group cursor-pointer`
+        : 'overflow-hidden cursor-pointer'
+
+    return (
+      <div
+        key={`product-thumb-${index}`}
+        className={className}
+        onClick={(e) => {
+          e.stopPropagation()
+          expandProduct(index)
+        }}
+      >
+        {coverImageUrl && (
+          <div className="w-full overflow-hidden">
+            <img
+              src={coverImageUrl}
+              alt={product.title}
+              className={`w-full h-auto object-contain ${variant === 'desktop' ? 'transition-transform duration-300 group-hover:scale-105' : ''}`}
+            />
+          </div>
+        )}
+        <p className={`text-[14px] mt-1 ${variant === 'desktop' ? 'group-hover:underline' : ''}`}>
+          {product.title}
+        </p>
+      </div>
+    )
+  }
 
   const handleExpand = () => {
     setIsExpanded(!isExpanded)
@@ -264,7 +410,28 @@ const ProjectItem = ({project}: {project: Project}) => {
                 {(() => {
                   let imageIndexCounter = 0
                   return project.photos.map((mediaItem, index) => {
-                    // Check if it's a video object
+                    if (mediaItem._type === 'descriptionBlock' || mediaItem._type === 'spacerBlock') {
+                      return null
+                    }
+
+                    if (mediaItem._type === 'productBlock') {
+                      const product = mediaItem.product
+                      if (!product) return null
+                      const photos = product.productPhotos || []
+
+                      if (isProductExpanded(index)) {
+                        return renderExpandedProduct(
+                          product,
+                          index,
+                          photos,
+                          'mobile',
+                          `mobile-product-${index}`,
+                        )
+                      }
+
+                      return renderProductThumbnail(product, index, 1, 'mobile')
+                    }
+
                     if (mediaItem._type === 'video') {
                       const posterUrl = mediaItem.poster ? urlForImage(mediaItem.poster) : null
                       return (
@@ -285,7 +452,6 @@ const ProjectItem = ({project}: {project: Project}) => {
                       )
                     }
 
-                    // It's an image - track index for lightbox
                     const currentImageIndex = imageIndexCounter
                     imageIndexCounter++
                     
@@ -310,9 +476,9 @@ const ProjectItem = ({project}: {project: Project}) => {
             )}
           </div>
 
-          {/* Desktop Layout */}
+  {/* Desktop Layout */}
           <div className="hidden md:block">
-            <div className="grid grid-cols-4 gap-4 items-start">
+            <div className="grid grid-cols-4 gap-4 items-start grid-flow-row-dense">
               {/* Main video first - spans 2 columns minimum */}
               {project.videoUrl && (
                 <div className="col-span-2 mb-4">
@@ -328,99 +494,48 @@ const ProjectItem = ({project}: {project: Project}) => {
                 </div>
               )}
 
-              {/* Media Gallery with smart description insertion */}
+              {/* Media Gallery - renders blocks in order with colSpan */}
               {project.photos &&
                 project.photos.length > 0 &&
                 (() => {
-                  const hasVideos = project.photos.some((item) => item._type === 'video')
-                  const elements = []
-                  let descriptionInserted = false
-
-                  // Separate videos and images
-                  const videos = project.photos.filter((item) => item._type === 'video')
-                  const images = project.photos.filter((item) => item._type !== 'video')
-
-                  // Add videos first
-                  videos.forEach((videoItem, index) => {
-                    const posterUrl = videoItem.poster ? urlForImage(videoItem.poster) : null
-                    elements.push(
-                      <div key={`video-${index}`} className="col-span-2 overflow-hidden">
-                        <video
-                          controls
-                          className="w-full h-auto"
-                          preload="metadata"
-                          poster={posterUrl || undefined}
-                        >
-                          <source src={videoItem.videoSrc} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                        {videoItem.caption && (
-                          <p className="text-[10px] mt-1">{videoItem.caption}</p>
-                        )}
-                      </div>,
-                    )
-                  })
-
-                  // Add description after videos (if there are videos)
-                  if (project.description && hasVideos) {
-                    elements.push(
-                      <div key="description" className="col-span-2 text-sm self-start whitespace-pre-line">
-                        {project.description}
-                        {project.links && project.links.length > 0 && (
-                          <div className="flex flex-col ">
-                            {project.links.map((link, i) => (
-                              <a
-                                key={i}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="border-t border-black py-1 "
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {link.title}
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                      </div>,
-                    )
-                    descriptionInserted = true
+                  const colSpanClass = (span: number) => {
+                    switch (span) {
+                      case 2: return 'col-span-2'
+                      case 3: return 'col-span-3'
+                      case 4: return 'col-span-4'
+                      default: return 'col-span-1'
+                    }
                   }
 
-                  // Add images after description
-                  images.forEach((imageItem, index) => {
-                    elements.push(
-                      <div
-                        key={`image-${index}`}
-                        className="overflow-hidden cursor-pointer"
-                        onClick={() => openLightbox(index)}
-                      >
-                        <ImageComponent
-                          image={imageItem}
-                          placeholderSrc={imageItem}
-                          classname="w-full h-auto object-contain transition-transform duration-300"
-                          fullQuality={true}
-                        />
-                        {imageItem.caption && (
-                          <p className="text-[10px] mt-1">{imageItem.caption}</p>
-                        )}
-                      </div>,
-                    )
+                  const elements: React.ReactNode[] = []
+                  let imageIndexCounter = 0
 
-                    // If no videos, insert description after 2nd image
-                    if (project.description && !hasVideos && !descriptionInserted && index === 1) {
+                  project.photos.forEach((mediaItem, index) => {
+                    const span = mediaItem.colSpan || 1
+
+                    if (mediaItem._type === 'spacerBlock') {
+                      if (expandedProductIndices.length > 0) {
+                        return
+                      }
                       elements.push(
-                        <div key="description" className="col-span-2 text-sm self-start whitespace-pre-line">
+                        <div key={`spacer-${index}`} className={colSpanClass(span)} />,
+                      )
+                      return
+                    }
+
+                    if (mediaItem._type === 'descriptionBlock') {
+                      elements.push(
+                        <div key={`desc-${index}`} className={`${colSpanClass(span)} text-sm self-start whitespace-pre-line`}>
                           {project.description}
                           {project.links && project.links.length > 0 && (
-                            <div className="flex flex-col ">
+                            <div className="flex flex-col">
                               {project.links.map((link, i) => (
                                 <a
                                   key={i}
                                   href={link.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="border-t border-black py-1  last:border-b"
+                                  className="border-t border-black py-1 last:border-b"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {link.title}
@@ -430,39 +545,64 @@ const ProjectItem = ({project}: {project: Project}) => {
                           )}
                         </div>,
                       )
-                      descriptionInserted = true
+                    } else if (mediaItem._type === 'productBlock') {
+                      const product = mediaItem.product
+                      if (!product) return
+                      const photos = product.productPhotos || []
+
+                      if (isProductExpanded(index)) {
+                        elements.push(
+                          renderExpandedProduct(
+                            product,
+                            index,
+                            photos,
+                            'desktop',
+                            `product-${index}`,
+                          ),
+                        )
+                      } else {
+                        elements.push(renderProductThumbnail(product, index, span, 'desktop'))
+                      }
+                    } else if (mediaItem._type === 'video') {
+                      const posterUrl = mediaItem.poster ? urlForImage(mediaItem.poster) : null
+                      elements.push(
+                        <div key={`video-${index}`} className={`${colSpanClass(span)} overflow-hidden`}>
+                          <video
+                            controls
+                            className="w-full h-auto"
+                            preload="metadata"
+                            poster={posterUrl || undefined}
+                          >
+                            <source src={mediaItem.videoSrc} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                          {mediaItem.caption && (
+                            <p className="text-[10px] mt-1">{mediaItem.caption}</p>
+                          )}
+                        </div>,
+                      )
+                    } else {
+                      const currentImageIndex = imageIndexCounter
+                      imageIndexCounter++
+                      elements.push(
+                        <div
+                          key={`image-${index}`}
+                          className={`${colSpanClass(span)} overflow-hidden cursor-pointer`}
+                          onClick={() => openLightbox(currentImageIndex)}
+                        >
+                          <ImageComponent
+                            image={mediaItem}
+                            placeholderSrc={mediaItem}
+                            classname="w-full h-auto object-contain transition-transform duration-300"
+                            fullQuality={true}
+                          />
+                          {mediaItem.caption && (
+                            <p className="text-[10px] mt-1">{mediaItem.caption}</p>
+                          )}
+                        </div>,
+                      )
                     }
                   })
-
-                  // If description wasn't inserted and there's no main video, show it at the beginning
-                  if (
-                    project.description &&
-                    !descriptionInserted &&
-                    !project.videoUrl &&
-                    !hasVideos
-                  ) {
-                    elements.unshift(
-                      <div key="description-fallback" className="col-span-2 text-sm self-start whitespace-pre-line">
-                        {project.description}
-                        {project.links && project.links.length > 0 && (
-                          <div className="flex flex-col ">
-                            {project.links.map((link, i) => (
-                              <a
-                                key={i}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="border-t border-black py-1  last:border-b"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {link.title}
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                      </div>,
-                    )
-                  }
 
                   return elements
                 })()}
@@ -579,6 +719,12 @@ export function HomePage({data}: HomePageProps) {
                 </a>
               )}
             </div>
+            <Link
+              href="/shop"
+              className="hover:underline hidden hover:underline-offset-4"
+            >
+              Shop
+            </Link>
           </div>
           {showInfo && (
             <div className="mt-2">

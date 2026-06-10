@@ -62,14 +62,39 @@ export const projectBySlugQuery = defineQuery(`
       ...,
       _type == 'image' => {
         ...,
-        "imageData": asset->metadata
+        "imageData": asset->metadata,
+        colSpan
       },
       _type == 'video' => {
         ...,
         poster{
           ...,
           "imageData": asset->metadata
+        },
+        colSpan
+      },
+      _type == 'descriptionBlock' => {
+        ...,
+        colSpan
+      },
+      _type == 'productBlock' => {
+        ...,
+        colSpan,
+        product->{
+          _id,
+          title,
+          "slug": slug.current,
+          price,
+          description,
+          "productPhotos": photos[]{
+            ...,
+            "imageData": asset->metadata
+          }
         }
+      },
+      _type == 'spacerBlock' => {
+        ...,
+        colSpan
       }
     }
   }
@@ -101,14 +126,39 @@ export const allProjectsQuery = defineQuery(`
       ...,
       _type == 'image' => {
         ...,
-        "imageData": asset->metadata
+        "imageData": asset->metadata,
+        colSpan
       },
       _type == 'video' => {
         ...,
         poster{
           ...,
           "imageData": asset->metadata
+        },
+        colSpan
+      },
+      _type == 'descriptionBlock' => {
+        ...,
+        colSpan
+      },
+      _type == 'productBlock' => {
+        ...,
+        colSpan,
+        product->{
+          _id,
+          title,
+          "slug": slug.current,
+          price,
+          description,
+          "productPhotos": photos[]{
+            ...,
+            "imageData": asset->metadata
+          }
         }
+      },
+      _type == 'spacerBlock' => {
+        ...,
+        colSpan
       }
     }
   }
@@ -249,6 +299,58 @@ export const allCollectionsQuery = defineQuery(`
     collectionPhotos[0]{
       ...,
       "imageData": asset->metadata
+    }
+  }
+`)
+
+export const productBySlugQuery = defineQuery(`
+  *[_type == "product" && slug.current == $slug][0] {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    price,
+    description,
+    photos[]{
+      ...,
+      "imageData": asset->metadata
+    }
+  }
+`)
+
+export const allProductsQuery = defineQuery(`
+  *[_type == "product"] | order(_createdAt desc) {
+    _id,
+    _type,
+    title,
+    "slug": slug.current,
+    price,
+    photos[0]{
+      ...,
+      "imageData": asset->metadata
+    }
+  }
+`)
+
+export const shopQuery = defineQuery(`
+  *[_type == "shop"][0]{
+    _id,
+    _type,
+    title,
+    collections[]{
+      _key,
+      title,
+      products[]->{
+        _id,
+        title,
+        "slug": slug.current,
+        price,
+        description,
+        "productPhotos": photos[]{
+          ...,
+          "imageData": asset->metadata
+        }
+      }
     }
   }
 `)

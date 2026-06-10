@@ -2,6 +2,7 @@
 import {CustomPortableText} from '@/components/CustomPortableText'
 import {Header} from '@/components/Header'
 import ImageBox from '@/components/ImageBox'
+import ProductCard from '@/components/ProductCard'
 import {studioUrl} from '@/sanity/lib/api'
 import {sanityFetch} from '@/sanity/lib/live'
 import {projectBySlugQuery, slugsByTypeQuery} from '@/sanity/lib/queries'
@@ -69,7 +70,7 @@ export default async function ProjectSlugRoute({params}: Props) {
       : null
 
   // Default to an empty object to allow previews on non-existent documents
-  const {client, coverImage, description, duration, overview, site, tags, title} = data ?? {}
+  const {client, coverImage, description, duration, overview, site, tags, title, products} = data ?? {}
 
   const startYear = new Date(duration?.start!).getFullYear()
   const endYear = duration?.end ? new Date(duration?.end).getFullYear() : 'Now'
@@ -152,6 +153,18 @@ export default async function ProjectSlugRoute({params}: Props) {
             paragraphClasses="font-serif max-w-3xl text-xl text-gray-600"
             value={description as any}
           />
+        )}
+
+        {/* Related Products */}
+        {products && products.length > 0 && (
+          <div className="mt-12">
+            <h2 className="mb-6 text-xl font-bold">Related Products</h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {products.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          </div>
         )}
       </div>
       <div className="absolute left-0 w-screen border-t" />
