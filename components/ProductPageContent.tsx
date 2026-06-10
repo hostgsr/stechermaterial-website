@@ -1,5 +1,6 @@
 'use client'
 
+import BuyButton from '@/components/BuyButton'
 import {urlForImage} from '@/sanity/lib/utils'
 import {PortableText} from 'next-sanity'
 import Image from 'next/image'
@@ -19,6 +20,7 @@ interface ProductPageContentProps {
 
 export default function ProductPageContent({data}: ProductPageContentProps) {
   const {title, price, description, photos} = data
+  const {_id, slug} = data
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
   const selectedImage = photos?.[selectedImageIndex]
@@ -50,7 +52,7 @@ export default function ProductPageContent({data}: ProductPageContentProps) {
             <h1 className="text-sm font-normal">{title}</h1>
 
             {price != null && (
-              <p className="mt-2">€{price.toFixed(2)}</p>
+              <p className="mt-2 ">€{price.toFixed(2)}</p>
             )}
 
             {description && (
@@ -59,12 +61,13 @@ export default function ProductPageContent({data}: ProductPageContentProps) {
               </div>
             )}
 
-            <button
-              disabled
-              className="mt-6 border border-black px-4 py-2 text-[10px] uppercase tracking-wider opacity-50 cursor-not-allowed"
-            >
-              Coming Soon
-            </button>
+            <BuyButton
+              title={title}
+              price={price}
+              productId={_id}
+              slug={slug}
+              image={selectedImageUrl}
+            />
           </div>
 
           {/* Additional Images */}

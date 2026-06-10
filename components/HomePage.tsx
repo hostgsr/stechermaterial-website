@@ -8,6 +8,7 @@ import {urlForFile, urlForImage} from '@/sanity/lib/utils'
 import {PortableText} from 'next-sanity'
 import Link from 'next/link'
 import React, {useEffect, useRef, useState} from 'react'
+import BuyButton from './BuyButton'
 import {CustomPortableText} from './CustomPortableText'
 import ImageComponent from './ImageComponent'
 import {ScrollImageGallery} from './ScrollImageGallery'
@@ -245,12 +246,14 @@ const ProjectItem = ({project}: {project: Project}) => {
             <PortableText value={product.description} />
           </div>
         )}
-        <button
-          disabled
-          className="mt-3 border border-black px-3 py-1.5  uppercase tracking-wider opacity-50 cursor-not-allowed"
-        >
-          Coming Soon
-        </button>
+        <BuyButton
+          title={product.title}
+          price={product.price}
+          productId={product._id}
+          slug={product.slug}
+          image={getProductCoverUrl(product)}
+          className="mt-3 border border-black px-3 py-1.5 uppercase tracking-wider transition-colors hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        />
       </div>
     </div>
   )

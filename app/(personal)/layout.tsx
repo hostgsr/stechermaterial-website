@@ -1,5 +1,8 @@
 // @ts-nocheck
 import '@/styles/index.css'
+import CartButton from '@/components/cart/CartButton'
+import {CartProvider} from '@/components/cart/CartContext'
+import CartDrawer from '@/components/cart/CartDrawer'
 import {CustomPortableText} from '@/components/CustomPortableText'
 import {Navbar} from '@/components/Navbar'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
@@ -41,7 +44,7 @@ export const viewport: Viewport = {
 export default async function IndexRoute({children}: {children: React.ReactNode}) {
   const {data} = await sanityFetch({query: settingsQuery})
   return (
-    <>
+    <CartProvider>
       <div className="bg-black text-white min-h-screen h-screen ">
         {/* <Navbar data={data} /> */}
         <div className="">{children}</div>
@@ -57,6 +60,8 @@ export default async function IndexRoute({children}: {children: React.ReactNode}
           )}
         </footer> */}
       </div>
+      <CartButton />
+      <CartDrawer />
       <Toaster />
       <SanityLive onError={handleError} />
       {(await draftMode()).isEnabled && (
@@ -65,6 +70,6 @@ export default async function IndexRoute({children}: {children: React.ReactNode}
           <VisualEditing />
         </>
       )}
-    </>
+    </CartProvider>
   )
 }

@@ -39,6 +39,7 @@
     "sanity-plugin-media": "^4.0.0",
     "server-only": "0.0.1",
     "sonner": "2.0.3",
+    "stripe": "^22.2.0",
     "styled-components": "6.1.17"
   },
   "devDependencies": {
